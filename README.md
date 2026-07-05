@@ -45,3 +45,4 @@ Buka `index.html` langsung di browser, atau aktifkan **GitHub Pages** (Settings 
 - **Export tabel** ke Excel / CSV / PDF — menyertakan kolom *Last audit*, *Audit result*, dan *Last submitted*.
 - Popup detail dengan blok **System record (read-only)**: *last submitted* (+ siapa) dan *last audit* — tidak muncul di tabel, hanya di popup dan hasil export.
 - **Responsif** untuk desktop, tablet, dan mobile.
+ 
