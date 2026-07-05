@@ -1,0 +1,19 @@
+/* ===========================================================
+   Kontrola — Webfont loading
+   The product itself never self-hosts Arimo — every screen links
+   Google Fonts directly (see index.html / device.html <link> tags).
+   We follow the same approach here rather than vendoring binaries
+   that the source project doesn't ship.
+   =========================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700&display=swap');
+
+/* Explicit @font-face (regular weight) so tooling that only reads local CSS,
+   not the imported stylesheet, still resolves a usable Arimo binary. The
+   @import above is what actually supplies weights 500/600/700 in a browser. */
+@font-face {
+  font-family: 'Arimo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/arimo/v36/P5sfzZCDf9_T_3cV7NCUECyoxNk37cxsBw.ttf') format('truetype');
+}

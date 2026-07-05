@@ -1,0 +1,78 @@
+/* ===========================================================
+   Kontrola — Color tokens
+   Source of truth: network-ui-kontrola/styles.css :root block
+   Palette: Orange #E25716 / Ink #241F20 / White #FFFFFF /
+            Light #F0EBEB / Gray #515151
+   =========================================================== */
+
+:root {
+  /* ---- Base brand palette ---- */
+  --orange: #E25716;
+  --orange-600: #c8480f;
+  --orange-050: #fdf0e9;
+  --ink: #241F20;
+  --white: #FFFFFF;
+  --light: #F0EBEB;
+  --gray: #515151;
+
+  /* ---- Semantic status ---- */
+  --good: #1f9d57;
+  --good-bg: rgba(31,157,87,.12);
+  --bad: #d8392b;
+  --bad-bg: rgba(216,57,43,.12);
+  --warn: #d98a16;
+  --warn-bg: rgba(217,138,22,.14);
+
+  /* ---- Semantic — Light theme (default) ---- */
+  --page-bg: #f3f0ef;
+  --card-bg: #ffffff;
+  --card-border: rgba(226, 87, 22, 0.28);
+  --card-border-soft: rgba(36, 31, 32, 0.08);
+  --nav-bg: #ffffff;
+  --text: #241F20;
+  --text-muted: #6c6766;
+  --text-faint: #9a9594;
+  --pill-bg: #ffffff;
+  --pill-inactive: #2c2728;
+  --field-bg: #ffffff;
+  --field-border: rgba(36, 31, 32, 0.14);
+  --row-hover: #fbf3ef;
+  --row-border: rgba(36, 31, 32, 0.07);
+  --thead-bg: #faf8f7;
+  --grid-line: rgba(36,31,32,.07);
+
+  /* ---- Monitoring-tool brand accents (data-source badges) ---- */
+  --tool-zabbix: #d31212;
+  --tool-datadog: #7b40c6;
+  --tool-librenms: #108a72;
+  --tool-smokeping: #2d6fd6;
+
+  /* ---- Link/secondary accent used for "downlink" role ---- */
+  --link-blue: #2d6fd6;
+}
+
+[data-theme="dark"] {
+  --page-bg: #171314;
+  --card-bg: #221d1e;
+  --card-border: rgba(226, 87, 22, 0.34);
+  --card-border-soft: rgba(255, 255, 255, 0.07);
+  --nav-bg: #221d1e;
+  --text: #F0EBEB;
+  --text-muted: #a39d9c;
+  --text-faint: #797373;
+  --pill-bg: #2c2627;
+  --pill-inactive: #d9d3d2;
+  --field-bg: #1c1819;
+  --field-border: rgba(255, 255, 255, 0.12);
+  --row-hover: #2a2324;
+  --row-border: rgba(255, 255, 255, 0.06);
+  --thead-bg: #1d191a;
+  --grid-line: rgba(255,255,255,.06);
+
+  --good: #34c578;
+  --good-bg: rgba(52,197,120,.16);
+  --bad: #ef5b4d;
+  --bad-bg: rgba(239,91,77,.16);
+  --warn: #eaa53a;
+  --warn-bg: rgba(234,165,58,.18);
+}

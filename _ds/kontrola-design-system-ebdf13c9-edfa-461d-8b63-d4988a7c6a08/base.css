@@ -1,0 +1,25 @@
+/* ===========================================================
+   Kontrola — base reset & body defaults
+   =========================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--page-bg);
+  color: var(--text);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background .35s ease, color .35s ease;
+  min-height: 100vh;
+}
+.wrap { max-width: var(--page-max-width); margin: 0 auto; padding: var(--page-padding); }
+
+/* shared card shell used across components/UI kits */
+.card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-4xl);
+  box-shadow: var(--shadow-card);
+}

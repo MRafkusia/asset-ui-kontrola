@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#F65C1A"/>
+    <g transform="translate(60,60)" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 37l11 11L77 3" transform="scale(0.9)"/>
+      <path d="M72 40v24a7 7 0 0 1-7 7H15a7 7 0 0 1-7-7V14a7 7 0 0 1 7-7h38" transform="scale(0.9)"/>
+    </g>
+  </svg>
+</template>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/fonts/fonts.css">
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/base.css">
+  <link rel="stylesheet" href="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/styles.css">
+  <script src="_ds/kontrola-design-system-ebdf13c9-edfa-461d-8b63-d4988a7c6a08/_ds_bundle.js"></script>
+  <style>
+    body{margin:0;background:var(--page-bg);}
+    /* The DS only ships :root (light) + [data-theme="dark"]. When the host sets
+       data-theme="dark" on <html> (OS dark mode), those dark tokens cascade into
+       our wrapper and our data-theme="light" has nothing to override with. Re-declare
+       the light tokens under [data-theme="light"] so our in-app toggle always wins. */
+    [data-theme="light"]{
+      --page-bg:#f3f0ef;--card-bg:#ffffff;--card-border:rgba(246,92,26,.28);--card-border-soft:rgba(36,31,32,.08);
+      --nav-bg:#ffffff;--text:#241F20;--text-muted:#6c6766;--text-faint:#9a9594;--pill-bg:#ffffff;--pill-inactive:#2c2728;
+      --field-bg:#ffffff;--field-border:rgba(36,31,32,.14);--row-hover:#fbf3ef;--row-border:rgba(36,31,32,.07);
+      --thead-bg:#faf8f7;--grid-line:rgba(36,31,32,.07);
+      --good:#1f9d57;--good-bg:rgba(31,157,87,.12);--bad:#d8392b;--bad-bg:rgba(216,57,43,.12);--warn:#d98a16;--warn-bg:rgba(217,138,22,.14);
+    }
+    @keyframes amcScan{0%{top:6%}50%{top:90%}100%{top:6%}}
+    @keyframes amcToast{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+    @keyframes amcPop{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .amc-row-act:hover{background:var(--orange-050)!important;color:var(--orange)!important}
+    .amc-sug:hover{background:var(--row-hover)!important}
+    .amc-btn-pri:hover{background:var(--orange-600)!important}
+    .amc-btn-sec:hover{background:var(--row-hover)!important}
+    .amc-drop:hover{background:var(--orange-050)!important;border-color:rgba(246,92,26,.5)!important}
+
+    /* ============ RESPONSIVE ============ */
+    /* Tablet: charts drop to 2-up */
+    @media (max-width:1024px){
+      .amc-charts{grid-template-columns:1fr 1fr!important}
+    }
+    /* Small tablet / large phone */
+    @media (max-width:760px){
+      .amc-page{padding:16px 16px 72px!important}
+      .amc-charts{grid-template-columns:1fr!important}
+      /* every 2-column grid (form fields, detail rows, audit scope, photos) stacks */
+      [style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}
+      [style*="grid-template-columns: 1fr 1.3fr"]{grid-template-columns:1fr!important}
+      /* audit-result 4-up stats become 2-up */
+      [style*="grid-template-columns: repeat(4, 1fr)"]{grid-template-columns:1fr 1fr!important}
+    }
+    /* Phone */
+    @media (max-width:480px){
+      .amc-page{padding:12px 12px 64px!important}
+      /* tighten card padding so content isn't cramped against edges */
+      .amc-charts>div{padding:18px 16px!important}
+    }
+  </style>
+</helmet>
+
+<div data-theme="{{ theme }}" style="--orange:#F65C1A;--orange-600:#D84E12;--orange-050:rgba(246,92,26,.1);min-height:100vh;background:var(--page-bg);color:var(--text);font-family:'Arimo',system-ui,-apple-system,sans-serif">
+<div class="amc-page" style="max-width:1320px;margin:0 auto;padding:22px 28px 90px">
+
+  <!-- ============ HEADER ============ -->
+  <header style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
+    <x-import component-from-global-scope="KontrolaDesignSystem_ebdf13.TopNav" logo="{{ navLogo }}" items="{{ navItems }}" active-href="#assets" actions="{{ navActions }}" hint-size="100%,66px"></x-import>
+    <div style="display:flex;justify-content:flex-end;gap:12px">
+      <div style="display:flex;align-items:center;gap:9px;background:var(--nav-bg);border-radius:999px;padding:9px 18px;box-shadow:var(--shadow-card);font-weight:600;font-size:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--gray)"><path d="M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M19 21V9a1 1 0 0 0-1-1h-3"/><path d="M8 7h2M8 11h2M8 15h2"/></svg> tristek
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;background:var(--orange);color:#fff;border-radius:999px;padding:9px 18px;box-shadow:0 4px 14px rgba(246,92,26,.32);font-weight:700;font-size:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg> Last synced Jul 5, 09:12
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ CHARTS ============ -->
+  <section class="amc-charts" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:26px">
+    <div style="background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:20px;box-shadow:var(--shadow-card);padding:22px 24px">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">Assets by Type</div>
+      {{ typeDonut }}
+    </div>
+    <div style="background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:20px;box-shadow:var(--shadow-card);padding:22px 24px">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">Assets by Usage</div>
+      {{ usageDonut }}
+    </div>
+    <div style="background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:20px;box-shadow:var(--shadow-card);padding:22px 24px">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px">Assets by Condition</div>
+      {{ conditionDonut }}
+    </div>
+  </section>
+
+  <!-- ============ TABLE CARD ============ -->
+  <section style="background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:20px;box-shadow:var(--shadow-card);padding:0">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px 24px 16px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0;font-size:21px;font-weight:700;letter-spacing:-.01em">Asset Register</h2>
+        <p style="margin:3px 0 0;font-size:13.5px;color:var(--text-muted)">Track, tag and manage every physical asset across sites · <b>{{ shownCount }}</b> in scope</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="amc-btn-sec" onClick="{{ toggleActivity }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:9px 14px;cursor:pointer;transition:background .15s">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg> Activity
+        </button>
+        <button class="amc-btn-sec" onClick="{{ openScan }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:9px 14px;cursor:pointer;transition:background .15s">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg> Scan QR
+        </button>
+        <button class="amc-btn-sec" onClick="{{ openAudit }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:9px 14px;cursor:pointer;transition:background .15s">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Audit
+        </button>
+        <div style="position:relative">
+          <button class="amc-btn-sec" onClick="{{ openExport }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:9px 14px;cursor:pointer;transition:background .15s">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg> Export
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <sc-if value="{{ showExport }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:100%;right:0;margin-top:8px;min-width:200px;background:var(--card-bg);border:1px solid var(--card-border-soft);border-radius:13px;box-shadow:0 12px 34px rgba(20,16,17,.22);padding:6px;z-index:30;animation:amcPop .13s ease">
+              <button onClick="{{ exportXls }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:11px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer" class="amc-sug"><svg viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13l3 5M12 13l-3 5"/></svg><span>Excel<span style="display:block;font-size:11px;font-weight:500;color:var(--text-faint)">.xlsx spreadsheet</span></span></button>
+              <button onClick="{{ exportCsv }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:11px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer" class="amc-sug"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>CSV<span style="display:block;font-size:11px;font-weight:500;color:var(--text-faint)">Raw data</span></span></button>
+              <button onClick="{{ exportPdf }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:11px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer" class="amc-sug"><svg viewBox="0 0 24 24" fill="none" stroke="var(--bad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg><span>PDF<span style="display:block;font-size:11px;font-weight:500;color:var(--text-faint)">Printable report</span></span></button>
+            </div>
+          </sc-if>
+        </div>
+        <div style="position:relative">
+          <button class="amc-btn-pri" onClick="{{ openAddMenu }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28);transition:background .15s">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 5v14M5 12h14"/></svg> Add Asset
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <sc-if value="{{ showAddMenu }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:100%;right:0;margin-top:8px;min-width:248px;background:var(--card-bg);border:1px solid var(--card-border-soft);border-radius:13px;box-shadow:0 12px 34px rgba(20,16,17,.22);padding:6px;z-index:30;animation:amcPop .13s ease">
+              <button onClick="{{ openAdd }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:11px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer" class="amc-sug"><span style="width:32px;height:32px;flex:none;border-radius:9px;display:grid;place-items:center;background:var(--orange-050);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M12 5v14M5 12h14"/></svg></span><span>Add single asset<span style="display:block;font-size:11px;font-weight:500;color:var(--text-faint)">Fill in the form manually</span></span></button>
+              <button onClick="{{ openBulk }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:11px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:none;border:none;border-radius:9px;padding:9px 11px;cursor:pointer" class="amc-sug"><span style="width:32px;height:32px;flex:none;border-radius:9px;display:grid;place-items:center;background:var(--orange-050);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg></span><span>Import from file<span style="display:block;font-size:11px;font-weight:500;color:var(--text-faint)">Upload a CSV or Excel sheet</span></span></button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <!-- filter bar -->
+    <div style="display:flex;align-items:center;gap:12px;padding:0 24px 18px;flex-wrap:wrap">
+      <div style="position:relative;width:280px;max-width:100%">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-faint);pointer-events:none"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" value="{{ search }}" onInput="{{ onSearch }}" onFocus="{{ onSearchFocus }}" onBlur="{{ onSearchBlur }}" placeholder="Search name, tag, serial, owner…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px 10px 35px;outline:none" />
+        <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:100%;left:0;right:0;margin-top:6px;background:var(--card-bg);border:1px solid var(--card-border-soft);border-radius:12px;box-shadow:0 12px 34px rgba(20,16,17,.2);padding:5px;z-index:25;animation:amcPop .13s ease;max-height:280px;overflow:auto">
+            <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="0">
+              <button class="amc-sug" onMouseDown="{{ s.pick }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:10px;font-family:inherit;background:none;border:none;border-radius:9px;padding:8px 10px;cursor:pointer">
+                <span style="width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;background:var(--orange-050);color:var(--orange)">{{ s.badge }}</span>
+                <span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.text }}</span><span style="display:block;font-size:11px;color:var(--text-faint)">{{ s.sub }}</span></span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative">
+        <button class="amc-btn-sec" onClick="{{ toggleFilters }}" style="display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:13.5px;font-weight:600;color:{{ filterBtnColor }};background:{{ filterBtnBg }};border:1.5px solid {{ filterBtnBorder }};border-radius:11px;padding:9px 14px;cursor:pointer;transition:background .15s">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg> Filters
+          <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}"><span style="display:grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;line-height:1">{{ filterCount }}</span></sc-if>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <sc-if value="{{ showFilters }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:100%;left:0;margin-top:8px;width:260px;background:var(--card-bg);border:1px solid var(--card-border-soft);border-radius:13px;box-shadow:0 12px 34px rgba(20,16,17,.22);padding:16px;z-index:30;animation:amcPop .13s ease">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <span style="font-size:13px;font-weight:700">Filter assets</span>
+              <button onClick="{{ clearFilters }}" style="font-family:inherit;font-size:12px;font-weight:600;color:{{ clearColor }};background:none;border:none;cursor:{{ clearCursor }};padding:0">Clear all</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Type</label><select value="{{ typeFilter }}" onChange="{{ onTypeFilter }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center"><option value="all">All types</option><option value="Laptop">Laptop</option><option value="Desktop">Desktop</option><option value="Monitor">Monitor</option><option value="Printer">Printer</option><option value="Server">Server</option><option value="Network Device">Network Device</option><option value="Projector">Projector</option><option value="Furniture">Furniture</option></select></div>
+              <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Usage</label><select value="{{ usageFilter }}" onChange="{{ onUsageFilter }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center"><option value="all">All usage</option><option value="In Use">In Use</option><option value="Idle">Idle</option></select></div>
+              <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Condition</label><select value="{{ conditionFilter }}" onChange="{{ onConditionFilter }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center"><option value="all">All condition</option><option value="Good">Good</option><option value="Damaged">Damaged</option></select></div>
+              <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Location</label><select value="{{ locFilter }}" onChange="{{ onLocFilter }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center"><option value="all">All locations</option><option value="HQ - Floor 1">HQ - Floor 1</option><option value="HQ - Floor 2">HQ - Floor 2</option><option value="Warehouse">Warehouse</option><option value="Branch - Bandung">Branch - Bandung</option><option value="Data Center">Data Center</option></select></div>
+            </div>
+            <button class="amc-btn-pri" onClick="{{ toggleFilters }}" style="width:100%;margin-top:14px;font-family:inherit;font-size:13.5px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:10px;padding:10px;cursor:pointer">Done</button>
+          </div>
+        </sc-if>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text-muted);font-weight:600;margin-left:auto">Show
+        <select value="{{ perPage }}" onChange="{{ onPerPage }}" style="font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:9px 28px 9px 12px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center">
+          <option value="8">8</option><option value="10">10</option><option value="25">25</option><option value="50">50</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="overflow-x:auto">{{ assetTable }}</div>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:44px 24px;text-align:center;color:var(--text-faint)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px;margin-bottom:10px"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-7l-2-2H5a2 2 0 0 0-2 2z"/></svg>
+        <div style="font-size:15px;font-weight:600;color:var(--text-muted)">No assets match your filters</div>
+        <div style="font-size:13px;margin-top:4px">Try clearing the search or changing the type / usage / condition / location filters.</div>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 24px;flex-wrap:wrap;border-top:1px solid var(--row-border)">
+      <span style="font-size:13px;color:var(--text-muted)">{{ pageInfo }}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onClick="{{ prevPage }}" style="min-width:36px;height:36px;padding:0 12px;border-radius:11px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text);font-weight:600;font-size:13.5px;cursor:pointer;opacity:{{ prevOpacity }}">Previous</button>
+        <span style="min-width:36px;height:36px;padding:0 12px;border-radius:11px;border:1.5px solid var(--orange);background:var(--orange);color:#fff;font-weight:600;font-size:13.5px;display:grid;place-items:center">{{ page }}</span>
+        <button onClick="{{ nextPage }}" style="min-width:36px;height:36px;padding:0 12px;border-radius:11px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text);font-weight:600;font-size:13.5px;cursor:pointer;opacity:{{ nextOpacity }}">Next</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ ADD / EDIT MODAL ============ -->
+<sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeForm }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow:auto;z-index:60;padding:36px 16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:700px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);animation:amcPop .16s ease">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 26px 16px;border-bottom:1px solid var(--row-border)">
+        <div><h3 style="margin:0;font-size:19px;font-weight:700">{{ formTitle }}</h3><p style="margin:3px 0 0;font-size:13px;color:var(--text-muted)">Tag the asset, record its serial number, usage &amp; condition, and attach photos.</p></div>
+        <button onClick="{{ closeForm }}" style="width:34px;height:34px;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="padding:22px 26px;display:flex;flex-direction:column;gap:16px">
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Asset name *</label>
+          <input value="{{ form.name }}" onInput="{{ ff.name }}" placeholder="e.g. Dell Latitude 5540" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid {{ nameBorder }};border-radius:11px;padding:10px 12px;outline:none" />
+          <sc-if value="{{ err.name }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--bad)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>{{ err.name }}</div></sc-if>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Asset tag / ID</label><input value="{{ form.tag }}" onInput="{{ ff.tag }}" placeholder="{{ tagPlaceholder }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /></div>
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Serial number (SN)</label><input value="{{ form.serial }}" onInput="{{ ff.serial }}" placeholder="e.g. 5CG3K21X9M" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none;font-variant-numeric:tabular-nums" /></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Type / category</label><select value="{{ form.type }}" onChange="{{ ff.type }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none;cursor:pointer"><option>Laptop</option><option>Desktop</option><option>Monitor</option><option>Printer</option><option>Server</option><option>Network Device</option><option>Projector</option><option>Furniture</option></select></div>
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Location</label><select value="{{ form.location }}" onChange="{{ ff.location }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none;cursor:pointer"><option>HQ - Floor 1</option><option>HQ - Floor 2</option><option>Warehouse</option><option>Branch - Bandung</option><option>Data Center</option></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Assigned owner</label><input value="{{ form.owner }}" onInput="{{ ff.owner }}" placeholder="e.g. Andi Pratama" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /></div>
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Value (Rp)</label><input value="{{ form.value }}" onInput="{{ ff.value }}" placeholder="e.g. 18500000" inputmode="numeric" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Usage</label><select value="{{ form.usage }}" onChange="{{ ff.usage }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none;cursor:pointer"><option>In Use</option><option>Idle</option></select></div>
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Condition</label><select value="{{ form.condition }}" onChange="{{ ff.condition }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none;cursor:pointer"><option>Good</option><option>Damaged</option></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Purchase date</label><input type="date" value="{{ form.purchase }}" onInput="{{ ff.purchase }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /></div>
+          <div style="grid-column:1/-1"><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Submitted by *</label><input value="{{ submitBy }}" onInput="{{ onSubmitBy }}" placeholder="Full name of the person submitting" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /><div style="font-size:11.5px;color:var(--text-faint);margin-top:5px">Recorded in the activity log. Submitted records cannot be edited afterwards.</div></div>
+          <div><label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:6px">End of service / warranty</label><input type="date" value="{{ form.warranty }}" onInput="{{ ff.warranty }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:14px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 12px;outline:none" /><div style="font-size:11.5px;color:var(--text-faint);margin-top:5px">Service-life status is set automatically from this date.</div></div>
+        </div>
+
+        <!-- two photos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:8px">Photo — condition</label>
+            <div style="width:100%;aspect-ratio:4/3;border-radius:12px;border:1.5px dashed var(--field-border);background:var(--field-bg);overflow:hidden;display:grid;place-items:center">{{ formPhotoCond }}</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
+              <label class="amc-btn-sec" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:9px;padding:7px 11px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg>Upload<input type="file" accept="image/*" onChange="{{ ff.uploadCond }}" style="display:none" /></label>
+              <button class="amc-btn-sec" onClick="{{ takePhoto }}" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:9px;padding:7px 11px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Take</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:7px">
+              <button onClick="{{ condZoomOut }}" title="Zoom out" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg></button>
+              <button onClick="{{ condZoomIn }}" title="Zoom in" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg></button>
+              <button onClick="{{ condRotate }}" title="Rotate 90°" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg></button>
+              <button onClick="{{ condShare }}" title="Share" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <label style="display:block;font-size:12.5px;font-weight:600;color:var(--text-muted);margin-bottom:8px">Photo — with owner</label>
+            <div style="width:100%;aspect-ratio:4/3;border-radius:12px;border:1.5px dashed var(--field-border);background:var(--field-bg);overflow:hidden;display:grid;place-items:center">{{ formPhotoOwner }}</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
+              <label class="amc-btn-sec" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:9px;padding:7px 11px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg>Upload<input type="file" accept="image/*" onChange="{{ ff.uploadOwner }}" style="display:none" /></label>
+              <button class="amc-btn-sec" onClick="{{ takePhoto }}" style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:9px;padding:7px 11px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Take</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:7px">
+              <button onClick="{{ ownZoomOut }}" title="Zoom out" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg></button>
+              <button onClick="{{ ownZoomIn }}" title="Zoom in" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg></button>
+              <button onClick="{{ ownRotate }}" title="Rotate 90°" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg></button>
+              <button onClick="{{ ownShare }}" title="Share" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 26px;border-top:1px solid var(--row-border)">
+        <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-faint)"><span style="width:56px;height:56px;flex:none">{{ formQr }}</span><span>QR auto-generated<br/>from asset tag</span></div>
+        <div style="display:flex;gap:10px">
+          <button class="amc-btn-sec" onClick="{{ closeForm }}" style="font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 18px;cursor:pointer">Cancel</button>
+          <button class="amc-btn-pri" onClick="{{ saveForm }}" style="font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 22px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)">{{ saveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ DETAIL MODAL ============ -->
+<sc-if value="{{ showDetail }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeDetail }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow:auto;z-index:60;padding:36px 16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:760px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);animation:amcPop .16s ease">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 26px 18px;border-bottom:1px solid var(--row-border)">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <h3 style="margin:0;font-size:19px;font-weight:700">{{ detail.name }}</h3>
+          <span style="font-size:12px;font-weight:700;color:var(--orange);background:var(--orange-050);border:1px solid rgba(246,92,26,.28);border-radius:999px;padding:3px 10px">{{ detail.tag }}</span>
+        </div>
+        <button onClick="{{ closeDetail }}" style="width:34px;height:34px;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="padding:22px 26px;display:grid;grid-template-columns:250px 1fr;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Condition photo</div>
+            <div style="width:100%;aspect-ratio:4/3;border-radius:12px;border:1px solid var(--card-border-soft);background:var(--field-bg);overflow:hidden;display:grid;place-items:center">{{ detailPhotoCond }}</div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button onClick="{{ condZoomOut }}" title="Zoom out" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M8 11h6"/></svg></button>
+              <button onClick="{{ condZoomIn }}" title="Zoom in" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg></button>
+              <button onClick="{{ condRotate }}" title="Rotate 90°" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/></svg></button>
+              <button onClick="{{ condShare }}" title="Share" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--field-border);background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center" class="amc-row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">With owner</div>
+            <div style="width:100%;aspect-ratio:4/3;border-radius:12px;border:1px solid var(--card-border-soft);background:var(--field-bg);overflow:hidden;display:grid;place-items:center">{{ detailPhotoOwner }}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">{{ detailUsage }}{{ detailCondition }}{{ detailLifecycle }}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 20px">
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Serial number</div><div style="font-size:14px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums">{{ detailSerial }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Type</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detail.type }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Location</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detail.location }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Assigned owner</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detailOwner }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Value</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detailValue }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Purchase date</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detailPurchase }}</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid var(--row-border)"><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Warranty</div><div style="font-size:14px;font-weight:600;margin-top:3px">{{ detailWarranty }}</div></div>
+          </div>
+          <div style="margin-top:2px;border:1px solid var(--card-border-soft);border-radius:13px;background:var(--field-bg);padding:13px 15px">
+            <div style="display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>System record · read-only</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 20px">
+              <div><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Last submitted</div><div style="font-size:13.5px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums">{{ detailLastSubmit }}</div></div>
+              <div><div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)">Last audit</div><div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap">{{ detailLastAuditPill }}<span style="font-size:12.5px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums">{{ detailLastAudit }}</span></div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">{{ detailLastAuditBy }}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 26px;border-top:1px solid var(--row-border);flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-faint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Immutable record — editing requires delete + re-create</span>
+        <div style="display:flex;gap:10px">
+          <button class="amc-btn-sec" onClick="{{ askDeleteFromDetail }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px;font-weight:600;color:var(--bad);background:var(--bad-bg);border:1.5px solid transparent;border-radius:11px;padding:10px 16px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg> Delete</button>
+          <button class="amc-btn-pri" onClick="{{ replaceFromDetail }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 20px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> Delete &amp; re-create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ DELETE CONFIRM ============ -->
+<sc-if value="{{ showDelete }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ cancelDelete }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:70;padding:16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:420px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);padding:26px;animation:amcPop .16s ease;text-align:center">
+      <div style="width:54px;height:54px;border-radius:999px;background:var(--bad-bg);color:var(--bad);display:grid;place-items:center;margin:0 auto 14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+      <h3 style="margin:0 0 6px;font-size:18px;font-weight:700">{{ deleteTitle }}</h3>
+      <p style="margin:0 0 6px;font-size:13.5px;color:var(--text-muted);line-height:1.5">Removing <b style="color:var(--text)">{{ deleteName }}</b> permanently. {{ deleteNote }}</p>
+      <div style="text-align:left;display:flex;flex-direction:column;gap:12px;margin:16px 0 18px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Reason for deletion *</label>
+          <select value="{{ deleteReason }}" onChange="{{ onDeleteReason }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center">
+            <option value="">Select a reason…</option>
+            <option value="Data correction (delete & re-create)">Data correction (delete &amp; re-create)</option>
+            <option value="Data entry error / wrong record">Data entry error / wrong record</option>
+            <option value="Duplicate record">Duplicate record</option>
+            <option value="Disposed / written off">Disposed / written off</option>
+            <option value="Damaged beyond repair">Damaged beyond repair</option>
+            <option value="Lost or stolen">Lost or stolen</option>
+            <option value="Transferred to another unit">Transferred to another unit</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Deleted by *</label>
+          <input value="{{ deleteBy }}" onInput="{{ onDeleteBy }}" placeholder="Full name of the person deleting" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 11px;outline:none" />
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Verification code *</label>
+          <div style="display:flex;gap:8px">
+            <input value="{{ deleteOtp }}" onInput="{{ onDeleteOtp }}" placeholder="6-digit code" inputmode="numeric" style="flex:1;min-width:0;box-sizing:border-box;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.25em;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 11px;outline:none;font-variant-numeric:tabular-nums" />
+            <button class="amc-btn-sec" onClick="{{ sendOtp }}" style="flex:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--orange);background:var(--orange-050);border:1.5px solid rgba(246,92,26,.4);border-radius:10px;padding:9px 13px;cursor:pointer;white-space:nowrap">{{ otpBtnLabel }}</button>
+          </div>
+          <sc-if value="{{ otpSent }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11.5px;color:var(--text-muted)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M22 6 12 13 2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>Code sent to the registered approver — demo code: <b style="color:var(--text);font-variant-numeric:tabular-nums">{{ otpDemo }}</b></div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ hasDeleteErr }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--bad)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>{{ deleteErr }}</div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="amc-btn-sec" onClick="{{ cancelDelete }}" style="font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 20px;cursor:pointer">Cancel</button>
+        <button onClick="{{ confirmDelete }}" style="font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--bad);border:none;border-radius:11px;padding:10px 22px;cursor:pointer">{{ deleteConfirmLabel }}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ ACTIVITY LOG MODAL ============ -->
+<sc-if value="{{ showActivity }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ toggleActivity }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow:auto;z-index:60;padding:36px 16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:640px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);animation:amcPop .16s ease">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 26px 16px;border-bottom:1px solid var(--row-border)">
+        <div><h3 style="margin:0;font-size:19px;font-weight:700">Activity log</h3><p style="margin:3px 0 0;font-size:13px;color:var(--text-muted)">Immutable trail of every asset added and deleted · {{ activityCount }}</p></div>
+        <button onClick="{{ toggleActivity }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="max-height:52vh;overflow:auto;padding:10px 16px">
+        <sc-for list="{{ activityList }}" as="e" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:11px">
+            <span style="flex:none;display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;min-width:52px;text-align:center;color:{{ e.fg }};background:{{ e.bg }}">{{ e.action }}</span>
+            <span style="flex:1;min-width:0"><span style="display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</span><span style="display:block;font-size:11.5px;color:var(--text-faint);font-variant-numeric:tabular-nums">{{ e.tag }} · by {{ e.by }}</span></span>
+            <span style="flex:none;font-size:11.5px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap">{{ e.time }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 26px;border-top:1px solid var(--row-border)">
+        <span style="font-size:11.5px;color:var(--text-faint)">Entries are system-recorded and cannot be edited or removed.</span>
+        <button class="amc-btn-pri" onClick="{{ downloadActivityLog }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13.5px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:9px 16px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Download CSV</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ SCAN QR MODAL ============ -->
+<sc-if value="{{ showScan }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeScan }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:70;padding:16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:420px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);padding:24px;animation:amcPop .16s ease">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 style="margin:0;font-size:18px;font-weight:700">Scan asset QR</h3>
+        <button onClick="{{ closeScan }}" style="width:34px;height:34px;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="position:relative;aspect-ratio:1;border-radius:16px;background:#14100f;overflow:hidden;display:grid;place-items:center">
+        <div style="position:absolute;top:20px;left:20px;width:34px;height:34px;border-top:3px solid var(--orange);border-left:3px solid var(--orange);border-radius:6px 0 0 0"></div>
+        <div style="position:absolute;top:20px;right:20px;width:34px;height:34px;border-top:3px solid var(--orange);border-right:3px solid var(--orange);border-radius:0 6px 0 0"></div>
+        <div style="position:absolute;bottom:20px;left:20px;width:34px;height:34px;border-bottom:3px solid var(--orange);border-left:3px solid var(--orange);border-radius:0 0 0 6px"></div>
+        <div style="position:absolute;bottom:20px;right:20px;width:34px;height:34px;border-bottom:3px solid var(--orange);border-right:3px solid var(--orange);border-radius:0 0 6px 0"></div>
+        <div style="position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);box-shadow:0 0 12px 2px rgba(246,92,26,.6);animation:amcScan 2.4s ease-in-out infinite"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="width:64px;height:64px"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 8h4v4H7zM13 13h4v4h-4z"/></svg>
+      </div>
+      <p style="text-align:center;font-size:13px;color:var(--text-muted);margin:16px 0 16px">Point the camera at an asset's QR label to open its record instantly.</p>
+      <button class="amc-btn-pri" onClick="{{ simulateScan }}" style="width:100%;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:12px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)">Simulate a scan</button>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ SHOW QR MODAL ============ -->
+<sc-if value="{{ showQr }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeQr }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:70;padding:16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:380px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);padding:24px;animation:amcPop .16s ease">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <h3 style="margin:0;font-size:18px;font-weight:700">Asset QR label</h3>
+        <button onClick="{{ closeQr }}" style="width:34px;height:34px;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <p style="margin:0 0 16px;font-size:13px;color:var(--text-muted)">Download or print this label, then stick it on the physical asset.</p>
+      <div style="border:2px solid rgba(246,92,26,.55);border-radius:14px;overflow:hidden;background:#fff;max-width:260px;margin:0 auto">
+        <div style="background:var(--orange);color:#fff;text-align:center;font-size:13px;font-weight:700;letter-spacing:.06em;padding:9px">tristek · ASSET</div>
+        <div style="padding:18px 18px 16px;text-align:center">
+          <div style="width:180px;height:180px;margin:0 auto">{{ qrBig }}</div>
+          <div style="font-size:22px;font-weight:700;color:#241F20;margin-top:12px;font-variant-numeric:tabular-nums">{{ qrTag }}</div>
+          <div style="font-size:12.5px;color:#555;margin-top:2px">{{ qrName }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="amc-btn-sec" onClick="{{ printQr }}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:11px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>Print</button>
+        <button class="amc-btn-pri" onClick="{{ downloadQr }}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:11px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Download</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ BULK IMPORT MODAL ============ -->
+<sc-if value="{{ showBulk }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeBulk }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow:auto;z-index:60;padding:36px 16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:760px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);animation:amcPop .16s ease">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 26px 16px;border-bottom:1px solid var(--row-border)">
+        <div><h3 style="margin:0;font-size:19px;font-weight:700">Import assets from file</h3><p style="margin:3px 0 0;font-size:13px;color:var(--text-muted)">Upload a CSV or Excel (.xls / .xlsx) file. Columns: Name, Tag, Serial, Type, Location, Owner, Usage, Condition, Purchase, Warranty, Value.</p></div>
+        <button onClick="{{ closeBulk }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="padding:20px 26px;display:flex;flex-direction:column;gap:14px">
+        <label class="amc-drop" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;border:1.6px dashed var(--field-border);border-radius:16px;background:var(--field-bg);padding:30px 22px;cursor:pointer;transition:background .15s,border-color .15s">
+          <span style="width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:var(--orange-050);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg></span>
+          <span style="font-size:14.5px;font-weight:700;color:var(--text)">{{ bulkDropTitle }}</span>
+          <span style="font-size:12.5px;color:var(--text-muted)">CSV, XLS or XLSX · one asset per row</span>
+          <input type="file" accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange="{{ onBulkFile }}" style="display:none" />
+        </label>
+        <div style="display:flex;justify-content:center">
+          <button class="amc-btn-sec" onClick="{{ downloadTemplate }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:600;color:var(--orange);background:none;border:none;padding:2px 4px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Download template file</button>
+        </div>
+        <sc-if value="{{ bulkHasRows }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--good);background:var(--good-bg);border-radius:8px;padding:4px 10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M20 6 9 17l-5-5"/></svg>{{ bulkValid }} ready to import</span>
+              <sc-if value="{{ bulkHasInvalid }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:4px 10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>{{ bulkInvalid }} skipped (missing name)</span></sc-if>
+            </div>
+            <div style="border:1px solid var(--row-border);border-radius:12px;overflow:hidden">
+              <div style="max-height:230px;overflow:auto">{{ bulkPreview }}</div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 26px;border-top:1px solid var(--row-border)">
+        <button class="amc-btn-sec" onClick="{{ closeBulk }}" style="font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 18px;cursor:pointer">Cancel</button>
+        <button class="amc-btn-pri" onClick="{{ confirmBulk }}" style="font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 22px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28);opacity:{{ bulkBtnOpacity }}">{{ bulkBtnLabel }}</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ AUDIT MODAL ============ -->
+<sc-if value="{{ showAudit }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeAudit }}" style="position:fixed;inset:0;background:rgba(20,16,17,.5);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow:auto;z-index:60;padding:36px 16px">
+    <div onClick="{{ stop }}" style="width:100%;max-width:720px;background:var(--card-bg);border-radius:22px;box-shadow:0 24px 70px rgba(20,16,17,.4);animation:amcPop .16s ease">
+
+      <!-- ---- CHECKLIST VIEW ---- -->
+      <sc-if value="{{ showAuditChecklist }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:22px 26px 16px;border-bottom:1px solid var(--row-border)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+            <div><h3 style="margin:0;font-size:19px;font-weight:700">Physical stock take</h3><p style="margin:3px 0 0;font-size:13px;color:var(--text-muted)">Walk each location and record what you physically find. Findings are logged, not editable.</p></div>
+            <button onClick="{{ closeAudit }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:12px;font-weight:600;color:var(--text-muted);background:var(--field-bg);border:1px solid var(--card-border-soft);border-radius:999px;padding:5px 12px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Last audit <b style="color:var(--text)">{{ lastAuditLabel }}</b> · {{ lastAuditSummary }}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+            <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Auditor</label><input value="{{ auditor }}" onInput="{{ onAuditor }}" placeholder="Your name" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 11px;outline:none" /></div>
+            <div><label style="display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:5px">Location in scope</label><select value="{{ auditScope }}" onChange="{{ onAuditScope }}" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:13.5px;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:9px 30px 9px 11px;outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>&quot;);background-repeat:no-repeat;background-position:right 9px center"><option value="all">All locations</option><option value="HQ - Floor 1">HQ - Floor 1</option><option value="HQ - Floor 2">HQ - Floor 2</option><option value="Warehouse">Warehouse</option><option value="Branch - Bandung">Branch - Bandung</option><option value="Data Center">Data Center</option></select></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:14px;font-size:11.5px;color:var(--text-muted);font-weight:600">
+            <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:var(--good)"></span>Found</span>
+            <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:#2d6fd6"></span>Wrong location</span>
+            <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:var(--warn)"></span>Damaged</span>
+            <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:2px;background:var(--bad)"></span>Missing</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+            <div style="flex:1;height:10px;border-radius:999px;background:var(--card-border-soft);overflow:hidden">{{ auditBar }}</div>
+            <span style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap">{{ auditProgress }}</span>
+          </div>
+        </div>
+        <div style="max-height:42vh;overflow:auto;padding:8px 14px">
+          <sc-for list="{{ auditList }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;background:{{ a.rowBg }}">
+              <span style="width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;background:var(--orange-050);color:var(--orange)">{{ a.badge }}</span>
+              <span style="flex:1;min-width:0"><span style="display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</span><span style="display:block;font-size:11px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.sub }} · {{ a.lastNote }}</span></span>
+              <div style="display:flex;gap:6px;flex:none">
+                <sc-for list="{{ a.states }}" as="st" hint-placeholder-count="4">
+                  <button onClick="{{ st.onClick }}" title="{{ st.title }}" style="width:34px;height:34px;display:grid;place-items:center;border-radius:9px;cursor:pointer;border:1.5px solid {{ st.border }};background:{{ st.bg }};color:{{ st.fg }};transition:background .12s,color .12s">{{ st.icon }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 26px;border-top:1px solid var(--row-border)">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="amc-btn-sec" onClick="{{ resetAudit }}" style="font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:8px 6px">Reset</button>
+            <button class="amc-btn-sec" onClick="{{ downloadAuditLog }}" style="display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:10px;padding:8px 12px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Download history log</button>
+          </div>
+          <button class="amc-btn-pri" onClick="{{ completeAudit }}" style="font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 20px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)">Complete &amp; log audit</button>
+        </div>
+      </sc-if>
+
+      <!-- ---- RESULT VIEW ---- -->
+      <sc-if value="{{ auditResult }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:22px 26px 16px;border-bottom:1px solid var(--row-border)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:42px;height:42px;flex:none;border-radius:999px;background:var(--good-bg);color:var(--good);display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div><h3 style="margin:0;font-size:19px;font-weight:700">Audit logged</h3><p style="margin:3px 0 0;font-size:12.5px;color:var(--text-muted)">{{ resTitle }} · {{ resMeta }}</p></div>
+            </div>
+            <button onClick="{{ closeAuditResult }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:none;background:var(--field-bg);color:var(--text-muted);cursor:pointer;display:grid;place-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px">
+            <sc-for list="{{ resStats }}" as="rs" hint-placeholder-count="4">
+              <div style="border:1.5px solid var(--card-border-soft);border-radius:13px;padding:12px 14px">
+                <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:{{ rs.color }}">{{ rs.value }}</div>
+                <div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-top:1px">{{ rs.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="max-height:38vh;overflow:auto;padding:14px 26px">
+          <sc-if value="{{ resHasExceptions }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px">Exceptions to follow up</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <sc-for list="{{ resExceptions }}" as="e" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;padding:9px 12px;border:1px solid var(--row-border);border-radius:11px">
+                  <span style="flex:1;min-width:0"><span style="display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</span><span style="display:block;font-size:11.5px;color:var(--text-faint);font-variant-numeric:tabular-nums">{{ e.tag }} · {{ e.location }}</span></span>
+                  <span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;color:{{ e.fg }};background:{{ e.bg }}">{{ e.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ resNoExceptions }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border:1px solid var(--good-bg);background:var(--good-bg);border-radius:12px;color:var(--good);font-size:13.5px;font-weight:600"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M20 6 9 17l-5-5"/></svg>All verified assets were found in place — no exceptions.</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 26px;border-top:1px solid var(--row-border)">
+          <button class="amc-btn-sec" onClick="{{ closeAuditResult }}" style="font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 18px;cursor:pointer">Done</button>
+          <div style="display:flex;gap:10px">
+            <button class="amc-btn-sec" onClick="{{ exportAuditCsv }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--field-bg);border:1.5px solid var(--field-border);border-radius:11px;padding:10px 16px;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Export CSV</button>
+            <button class="amc-btn-pri" onClick="{{ exportAuditPdf }}" style="display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--orange);border:none;border-radius:11px;padding:10px 18px;cursor:pointer;box-shadow:0 4px 12px rgba(246,92,26,.28)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>Export PDF</button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ TOAST ============ -->
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:90;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:999px;padding:12px 20px;box-shadow:0 12px 34px rgba(20,16,17,.35);font-size:13.5px;font-weight:600;animation:amcToast .2s ease">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M20 6 9 17l-5-5"/></svg>{{ toast }}
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.today = new Date('2026-07-05T00:00:00');
+    this.palette = ['#F65C1A', '#454f5e', '#2d6fd6', '#1f9d57', '#d98a16', '#9a5cc6', '#e0836a', '#7a8290'];
+    const assets = this.seed();
+    this.state = {
+      theme: 'light',
+      assets,
+      auditLog: this.seedLog(assets),
+      search: '', suggestOpen: false,
+      typeFilter: 'all', usageFilter: 'all', conditionFilter: 'all', locFilter: 'all',
+      sortKey: 'tag', sortDir: 1, perPage: '8', page: 1,
+      showForm: false, editingId: null, form: this.blank(), err: {},
+      showDetail: false, detailId: null,
+      showDelete: false, deleteId: null, deleteBy: '', deleteOtp: '', otpCode: null, deleteErr: '', replaceDraft: null, deleteReason: '',
+      submitBy: 'Rina Hapsari',
+      activityLog: this.seedActivity(assets),
+      showActivity: false,
+      showScan: false, showAudit: false, showExport: false, showAddMenu: false, showFilters: false,
+      showBulk: false, bulkText: '', bulkFileName: '',
+      showQr: false, qrId: null,
+      audit: {}, auditScope: 'all', auditor: 'Rina Hapsari', auditResult: null,
+      img: { condition: { scale: 1, rot: 0 }, owner: { scale: 1, rot: 0 } }, toast: null,
+      hoverSeg: null,
+      seq: 15,
+    };
+  }
+
+  // audit status metadata — the four physical-verification outcomes
+  auditStates() {
+    return [
+      { k: 'found',   label: 'Found',   fg: 'var(--good)', bg: 'var(--good-bg)', color: 'var(--good)', d: ['M20 6 9 17l-5-5'] },
+      { k: 'moved',   label: 'Wrong location', fg: '#2d6fd6', bg: 'rgba(45,111,214,.12)', color: '#2d6fd6', d: ['M12 21s-6-5.7-6-10a6 6 0 0 1 12 0c0 4.3-6 10-6 10z', 'M12 9v2'] },
+      { k: 'damaged', label: 'Damaged', fg: 'var(--warn)', bg: 'var(--warn-bg)', color: 'var(--warn)', d: ['M14.5 4.5a3.5 3.5 0 0 0-4.9 4.4L3 15.5V21h5.5l6.6-6.6a3.5 3.5 0 0 0 4.4-4.9l-2.6 2.6-2.8-.7-.7-2.8z'] },
+      { k: 'missing', label: 'Missing', fg: 'var(--bad)', bg: 'var(--bad-bg)', color: 'var(--bad)', d: ['M18 6 6 18M6 6l12 12'] },
+    ];
+  }
+  auditMeta(k) { return this.auditStates().find(s => s.k === k) || null; }
+
+  blank() {
+    return { name: '', tag: '', serial: '', type: 'Laptop', location: 'HQ - Floor 1', owner: '', usage: 'In Use', condition: 'Good', purchase: '', warranty: '', value: '', photoCondition: '', photoOwner: '' };
+  }
+
+  seed() {
+    // tag, name, type, location, owner, serial, usage, condition, purchase, warranty, value
+    const a = [
+      ['AST-0001', 'Dell Latitude 5540', 'Laptop', 'HQ - Floor 1', 'Andi Pratama', '5CG3K21X9M', 'In Use', 'Good', '2024-02-10', '2027-02-10', 18500000],
+      ['AST-0002', 'HP EliteDesk 800 G9', 'Desktop', 'HQ - Floor 2', 'Budi Santoso', 'CZC33210AB', 'In Use', 'Good', '2023-06-01', '2026-06-01', 12000000],
+      ['AST-0003', 'Dell UltraSharp U2723', 'Monitor', 'HQ - Floor 1', 'Andi Pratama', 'CN0KP2723M', 'In Use', 'Good', '2024-03-15', '2027-03-15', 6500000],
+      ['AST-0004', 'Canon imageRUNNER 2630', 'Printer', 'HQ - Floor 2', 'Shared', 'QRE41022DX', 'Idle', 'Damaged', '2022-09-20', '2025-09-20', 22000000],
+      ['AST-0005', 'Dell PowerEdge R750', 'Server', 'Data Center', 'IT Operations', '7X2K9L1PDG', 'In Use', 'Good', '2023-11-05', '2026-11-05', 145000000],
+      ['AST-0006', 'Cisco Catalyst 9200', 'Network Device', 'Data Center', 'IT Operations', 'FCW2145L0AB', 'In Use', 'Good', '2023-08-12', '2028-08-12', 48000000],
+      ['AST-0007', 'Epson EB-2250U Projector', 'Projector', 'HQ - Floor 1', 'Meeting Room A', 'X4NF9012345', 'Idle', 'Good', '2021-05-01', '2024-05-01', 14000000],
+      ['AST-0008', 'Herman Miller Aeron', 'Furniture', 'HQ - Floor 2', 'Citra Dewanti', '—', 'In Use', 'Good', '2024-01-10', '', 12800000],
+      ['AST-0009', 'Lenovo ThinkPad X1', 'Laptop', 'Branch - Bandung', 'Dewi Wulandari', 'PF3ABX2109', 'In Use', 'Good', '2025-01-20', '2028-01-20', 26500000],
+      ['AST-0010', 'APC Smart-UPS 3000VA', 'Network Device', 'Data Center', 'IT Operations', 'AS2210330011', 'Idle', 'Damaged', '2022-04-01', '2025-10-01', 32000000],
+      ['AST-0011', 'Samsung S24R Monitor', 'Monitor', 'Warehouse', 'Store Keeper', '0ABCD2500EF', 'Idle', 'Good', '2023-02-15', '2026-02-15', 2500000],
+      ['AST-0012', 'MacBook Pro 14 M3', 'Laptop', 'HQ - Floor 1', 'Eko Rahmawan', 'C02XL0ABMD6T', 'In Use', 'Good', '2025-03-01', '2028-03-01', 34000000],
+      ['AST-0013', 'Zebra DS2208 Scanner', 'Network Device', 'Warehouse', 'Store Keeper', '18240500123X', 'In Use', 'Good', '2024-07-01', '2026-07-30', 8500000],
+      ['AST-0014', 'Dell OptiPlex 3070', 'Desktop', 'Warehouse', 'Unassigned', '8H3KJ90211', 'Idle', 'Damaged', '2019-01-01', '2022-01-01', 0],
+    ];
+    // prior-quarter audit outcome (by asset index) + last-submitted stamp
+    const priorAudit = { 3: 'damaged', 9: 'damaged', 13: 'missing' }; // 0-based → AST-0004, -0010, -0014
+    const submitStamps = ['Feb 12, 2024 · 14:20', 'Jun 03, 2023 · 09:10', 'Mar 16, 2024 · 11:05', 'Sep 22, 2022 · 16:40', 'Nov 06, 2023 · 08:30', 'Aug 13, 2023 · 10:15', 'May 02, 2021 · 13:50', 'Jan 11, 2024 · 15:25', 'Jan 21, 2025 · 09:45', 'Apr 02, 2022 · 12:00', 'Feb 16, 2023 · 17:10', 'Mar 02, 2025 · 10:30', 'Jul 02, 2024 · 14:00', 'Jan 02, 2019 · 08:00'];
+    return a.map((r, i) => ({
+      id: i + 1, tag: r[0], name: r[1], type: r[2], location: r[3], owner: r[4], serial: r[5], usage: r[6], condition: r[7], purchase: r[8], warranty: r[9], value: r[10],
+      photoCondition: '', photoOwner: '',
+      lastSubmit: submitStamps[i] || 'Jan 01, 2024 · 09:00',
+      lastAudit: { date: 'Apr 02, 2026 · 09:30', status: priorAudit[i] || 'found', by: 'Rina Hapsari', scope: 'All locations' },
+    }));
+  }
+
+  // Build the initial audit-history log from the seeded assets' prior audit.
+  seedLog(assets) {
+    const results = assets.map(a => ({ tag: a.tag, name: a.name, location: a.location, status: a.lastAudit ? a.lastAudit.status : 'found' }));
+    const tally = this.tally(results);
+    return [{ id: 1, date: 'Apr 02, 2026 · 09:30', by: 'Rina Hapsari', scope: 'All locations', total: results.length, ...tally, results }];
+  }
+
+  tally(results) {
+    const c = { found: 0, moved: 0, damaged: 0, missing: 0 };
+    results.forEach(r => { if (c[r.status] != null) c[r.status] += 1; });
+    return c;
+  }
+
+  // ---------- date helpers ----------
+  pad2(n) { return String(n).padStart(2, '0'); }
+  fmtStamp(d) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; return M[d.getMonth()] + ' ' + this.pad2(d.getDate()) + ', ' + d.getFullYear() + ' · ' + this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes()); }
+  nowStamp() { return this.fmtStamp(new Date()); }
+
+  // ---------- activity log (immutable audit trail of adds/deletes) ----------
+  seedActivity(assets) {
+    return assets.map((a, i) => ({ id: i + 1, time: a.lastSubmit, action: 'Added', tag: a.tag, name: a.name, by: 'Rina Hapsari' })).reverse();
+  }
+  logActivity(action, asset, by, reason) {
+    this.setState(s => ({ activityLog: [{ id: (s.activityLog[0] ? s.activityLog[0].id + 1 : 1), time: this.nowStamp(), action, tag: asset.tag, name: asset.name, by, reason: reason || '' }, ...s.activityLog] }));
+  }
+  toggleActivity = () => this.setState(s => ({ showActivity: !s.showActivity, showExport: false, showAddMenu: false, showFilters: false }));
+  downloadActivityLog = () => {
+    const log = this.state.activityLog;
+    if (!log.length) { this.toast('No activity yet'); return; }
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [['Time', 'Action', 'Asset ID', 'Name', 'Performed by', 'Reason'].join(',')]
+      .concat(log.slice().reverse().map(e => [e.time, e.action, e.tag, e.name, e.by, e.reason || ''].map(esc).join(',')));
+    this.download('asset-activity-log.csv', lines.join('\n'), 'text/csv');
+  };
+
+  // ---------- helpers ----------
+  toast(msg) { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: null }), 2600); }
+  stop = (e) => { e.stopPropagation(); };
+  setForm(k, v) { this.setState((s) => ({ form: { ...s.form, [k]: v } })); }
+  fmtMoney(n) { const x = Number(n) || 0; return x === 0 ? '\u2014' : 'Rp' + x.toLocaleString('id-ID'); }
+  usageStyle(u) { return u === 'In Use' ? { fg: 'var(--good)', bg: 'var(--good-bg)' } : { fg: 'var(--text-muted)', bg: 'var(--field-bg)' }; }
+  conditionStyle(c) { return c === 'Damaged' ? { fg: 'var(--bad)', bg: 'var(--bad-bg)' } : { fg: 'var(--good)', bg: 'var(--good-bg)' }; }
+  warrantyDays(w) { if (!w) return null; return Math.round((new Date(w + 'T00:00:00') - this.today) / 86400000); }
+  lifecycle(w) {
+    if (!w) return null;
+    const d = this.warrantyDays(w);
+    if (d < 0) return { label: 'Expired', fg: 'var(--bad)', bg: 'var(--bad-bg)' };
+    if (d <= 90) return { label: 'Approaching', fg: 'var(--warn)', bg: 'var(--warn-bg)' };
+    return { label: 'Active', fg: 'var(--good)', bg: 'var(--good-bg)' };
+  }
+
+  svg(children, sw) { return React.createElement('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: sw || 2, strokeLinecap: 'round', strokeLinejoin: 'round', style: { width: '100%', height: '100%', display: 'block' } }, children); }
+
+  pill(text, style, key) {
+    return React.createElement('span', { key, style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 700, padding: '4px 10px', borderRadius: 999, whiteSpace: 'nowrap', background: style.bg, color: style.fg, border: style.bg === 'var(--field-bg)' ? '1px solid var(--field-border)' : 'none' } },
+      React.createElement('span', { style: { width: 6, height: 6, borderRadius: 999, background: style.fg } }), text);
+  }
+
+  box(text, style, key) {
+    return React.createElement('span', { key, style: { display: 'inline-block', fontSize: 11, fontWeight: 700, letterSpacing: '.01em', padding: '3px 9px', borderRadius: 6, whiteSpace: 'nowrap', background: style.bg, color: style.fg, border: style.bg === 'var(--field-bg)' ? '1px solid var(--field-border)' : 'none', fontVariantNumeric: 'tabular-nums' } }, text);
+  }
+
+  typeIcon(type) {
+    const p = {
+      'Laptop': 'M3 5h18v11H3zM2 20h20',
+      'Desktop': 'M4 4h16v11H4zM9 19h6M10 15v4M14 15v4',
+      'Monitor': 'M3 4h18v12H3zM8 20h8M12 16v4',
+      'Printer': 'M6 9V3h12v6M6 18h12v3H6zM6 14h12v-3a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2z',
+      'Server': 'M3 4h18v6H3zM3 14h18v6H3zM7 7h.01M7 17h.01',
+      'Network Device': 'M4 4h16v6H4zM8 14h8v6H8zM12 10v4M6 7h.01M6 17h.01',
+      'Projector': 'M3 8h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H3zM19 12h2M7 18v2M15 18v2',
+      'Furniture': 'M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M4 10a2 2 0 0 0-2 2v4h20v-4a2 2 0 0 0-2-2M5 20v-4M19 20v-4',
+    }[type] || 'M3 7h18v13H3zM3 7l3-4h12l3 4';
+    return this.svg(p.split('M').filter(Boolean).map((seg, i) => React.createElement('path', { key: i, d: 'M' + seg })), 1.7);
+  }
+
+  qrMatrix(str) {
+    let h = 0; const s0 = str || 'x';
+    for (let i = 0; i < s0.length; i++) h = (h * 31 + s0.charCodeAt(i)) >>> 0;
+    let s = h || 1;
+    const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+    const n = 21;
+    const cells = Array.from({ length: n }, () => new Array(n).fill(false));
+    const inFinder = (x, y) => (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13);
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (inFinder(x, y)) continue;
+      if (rnd() > 0.52) cells[y][x] = true;
+    }
+    const drawFinder = (ox, oy) => {
+      for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) {
+        const border = x === 0 || x === 6 || y === 0 || y === 6;
+        const center = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+        cells[oy + y][ox + x] = border || center;
+      }
+    };
+    drawFinder(0, 0); drawFinder(14, 0); drawFinder(0, 14);
+    return { n, cells };
+  }
+
+  qr(str, key) {
+    const { n, cells } = this.qrMatrix(str);
+    const rects = [];
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (cells[y][x]) rects.push(React.createElement('rect', { key: x + '-' + y, x, y, width: 1.02, height: 1.02, fill: '#241F20' }));
+    }
+    return React.createElement('svg', { key, viewBox: '0 0 21 21', style: { width: '100%', height: '100%', display: 'block' } },
+      React.createElement('rect', { x: 0, y: 0, width: 21, height: 21, fill: '#ffffff' }),
+      ...rects);
+  }
+
+  photoEl(src, type, slot) {
+    if (src) {
+      const t = this.state.img[slot] || { scale: 1, rot: 0 };
+      return React.createElement('img', { src, alt: '', style: { width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${t.scale}) rotate(${t.rot}deg)`, transition: 'transform .18s ease' } });
+    }
+    return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: 'var(--text-faint)' } },
+      React.createElement('span', { style: { width: 34, height: 34, color: 'var(--text-faint)' } }, this.typeIcon(type)),
+      React.createElement('span', { style: { fontSize: 10.5, fontWeight: 600 } }, 'No photo'));
+  }
+
+  donut(segments, centerTop, centerVal, key) {
+    const total = segments.reduce((a, x) => a + x.value, 0) || 1;
+    const R = 15.9155, C = 2 * Math.PI * R; let acc = 0;
+    const hov = this.state.hoverSeg;
+    const active = hov && hov.key === key ? hov.i : null;
+    const setHov = (i) => this.setState({ hoverSeg: { key, i } });
+    const clearHov = () => this.setState({ hoverSeg: null });
+    const drawn = segments.map((seg, i) => ({ seg, i })).filter(x => x.seg.value > 0);
+    const circles = drawn.map(({ seg, i }) => {
+      const len = (seg.value / total) * C;
+      const isDim = active != null && active !== i;
+      const el = React.createElement('circle', { key: i, cx: 21, cy: 21, r: R, fill: 'none', stroke: seg.color, strokeWidth: active === i ? 6.4 : 5.2, strokeDasharray: `${len} ${C - len}`, strokeDashoffset: -acc, transform: 'rotate(-90 21 21)', opacity: isDim ? 0.28 : 1, style: { cursor: 'pointer', transition: 'opacity .15s, stroke-width .15s' }, onMouseEnter: () => setHov(i), onMouseLeave: clearHov });
+      acc += len; return el;
+    });
+    const aseg = active != null ? segments[active] : null;
+    const centerLabel = aseg ? aseg.label : centerTop;
+    const centerBig = aseg ? aseg.value : centerVal;
+    const centerSub = aseg ? Math.round((aseg.value / total) * 100) + '%' : null;
+    return React.createElement('div', { key, style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 } },
+      React.createElement('div', { style: { position: 'relative', width: 190, height: 190 } },
+        React.createElement('svg', { viewBox: '0 0 42 42', style: { width: '100%', height: '100%' } },
+          React.createElement('circle', { cx: 21, cy: 21, r: R, fill: 'none', stroke: 'var(--card-border-soft)', strokeWidth: 5.2 }), ...circles),
+        React.createElement('div', { style: { position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', textAlign: 'center' } },
+          React.createElement('span', { style: { fontSize: 11.5, fontWeight: 600, color: aseg ? aseg.color : 'var(--text-muted)', whiteSpace: 'nowrap' } }, centerLabel),
+          React.createElement('span', { style: { fontSize: 34, fontWeight: 700, letterSpacing: '-.02em', color: 'var(--text)', lineHeight: 1.05 } }, centerBig),
+          centerSub && React.createElement('span', { style: { fontSize: 12, fontWeight: 600, color: 'var(--text-faint)' } }, centerSub))),
+      React.createElement('div', { style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '7px 14px', maxWidth: 260 } },
+        segments.map((seg, i) => React.createElement('span', { key: i, onMouseEnter: () => setHov(i), onMouseLeave: clearHov, style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: active === i ? 'var(--text)' : 'var(--text-muted)', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', opacity: active != null && active !== i ? 0.45 : 1, transition: 'opacity .15s, color .15s' } },
+          React.createElement('span', { style: { width: 9, height: 9, borderRadius: 999, background: seg.color } }), seg.label))));
+  }
+
+  // ---------- actions ----------
+  toggleTheme = () => this.setState(s => ({ theme: s.theme === 'light' ? 'dark' : 'light' }));
+  onSearch = (e) => this.setState({ search: e.target.value, suggestOpen: true, page: 1 });
+  onSearchFocus = () => this.setState({ suggestOpen: true });
+  onSearchBlur = () => setTimeout(() => this.setState({ suggestOpen: false }), 160);
+  onTypeFilter = (e) => this.setState({ typeFilter: e.target.value, page: 1 });
+  onUsageFilter = (e) => this.setState({ usageFilter: e.target.value, page: 1 });
+  onConditionFilter = (e) => this.setState({ conditionFilter: e.target.value, page: 1 });
+  onLocFilter = (e) => this.setState({ locFilter: e.target.value, page: 1 });
+  onPerPage = (e) => this.setState({ perPage: e.target.value, page: 1 });
+  onSort = (k) => this.setState(s => s.sortKey === k ? { sortDir: -s.sortDir } : { sortKey: k, sortDir: 1 });
+
+  openAddMenu = () => this.setState(s => ({ showAddMenu: !s.showAddMenu, showExport: false }));
+  openAdd = () => this.setState({ showForm: true, editingId: null, form: this.blank(), err: {}, img: { condition: { scale: 1, rot: 0 }, owner: { scale: 1, rot: 0 } }, showExport: false, showAddMenu: false });
+  openEdit = (a) => this.setState({ showForm: true, showDetail: false, editingId: a.id, form: { ...a }, err: {}, img: { condition: { scale: 1, rot: 0 }, owner: { scale: 1, rot: 0 } } });
+  closeForm = () => this.setState({ showForm: false });
+  saveForm = () => {
+    if (!(this.state.submitBy || '').trim()) { this.toast('Fill in "Submitted by" before saving'); return; }
+    const f = this.state.form; const err = {};
+    if (!f.name || !f.name.trim()) err.name = 'Asset name is required.';
+    if (Object.keys(err).length) { this.setState({ err }); return; }
+    this.setState(s => {
+      const val = Number(String(f.value).replace(/[^0-9]/g, '')) || 0;
+      if (s.editingId) {
+        return { assets: s.assets.map(a => a.id === s.editingId ? { ...f, id: s.editingId, value: val, lastSubmit: this.nowStamp() } : a), showForm: false, toast: 'Asset “' + f.name + '” updated' };
+      }
+      const seq = s.seq + 1; const tag = f.tag && f.tag.trim() ? f.tag.trim() : 'AST-' + String(seq).padStart(4, '0');
+      const na = { ...f, id: seq, tag, value: val, lastSubmit: this.nowStamp(), lastAudit: null, submittedBy: (s.submitBy || 'Unknown').trim() || 'Unknown' };
+      setTimeout(() => this.logActivity('Added', na, na.submittedBy), 0);
+      return { assets: [na, ...s.assets], seq, showForm: false, page: 1, toast: 'Asset “' + f.name + '” added' };
+    });
+  };
+  onSubmitBy = (e) => this.setState({ submitBy: e.target.value });
+
+  openDetail = (a) => this.setState({ showDetail: true, detailId: a.id, img: { condition: { scale: 1, rot: 0 }, owner: { scale: 1, rot: 0 } } });
+  closeDetail = () => this.setState({ showDetail: false });
+  // Assets are immutable — "editing" = delete the old record (OTP-verified) then re-create.
+  replaceFromDetail = () => {
+    const a = this.state.assets.find(x => x.id === this.state.detailId);
+    if (a) this.setState({ showDelete: true, deleteId: a.id, showDetail: false, replaceDraft: { ...a }, deleteBy: '', deleteOtp: '', otpCode: null, deleteErr: '', deleteReason: 'Data correction (delete & re-create)' });
+  };
+  askDelete = (a) => this.setState({ showDelete: true, deleteId: a.id, replaceDraft: null, deleteBy: '', deleteOtp: '', otpCode: null, deleteErr: '', deleteReason: '' });
+  askDeleteFromDetail = () => this.setState({ showDelete: true, deleteId: this.state.detailId, showDetail: false, replaceDraft: null, deleteBy: '', deleteOtp: '', otpCode: null, deleteErr: '', deleteReason: '' });
+  cancelDelete = () => this.setState({ showDelete: false, replaceDraft: null, deleteErr: '' });
+  onDeleteBy = (e) => this.setState({ deleteBy: e.target.value, deleteErr: '' });
+  onDeleteReason = (e) => this.setState({ deleteReason: e.target.value, deleteErr: '' });
+  onDeleteOtp = (e) => this.setState({ deleteOtp: e.target.value.replace(/\D/g, '').slice(0, 6), deleteErr: '' });
+  sendOtp = () => {
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    this.setState({ otpCode: code, deleteOtp: '', deleteErr: '' });
+  };
+  confirmDelete = () => {
+    const s = this.state;
+    const by = (s.deleteBy || '').trim();
+    if (!s.deleteReason) { this.setState({ deleteErr: 'Select a reason for deletion' }); return; }
+    if (!by) { this.setState({ deleteErr: 'Enter the name of the person deleting' }); return; }
+    if (!s.otpCode) { this.setState({ deleteErr: 'Request a verification code first' }); return; }
+    if (s.deleteOtp !== s.otpCode) { this.setState({ deleteErr: 'Verification code does not match' }); return; }
+    const a = s.assets.find(x => x.id === s.deleteId);
+    const draft = s.replaceDraft;
+    if (a) this.logActivity(draft ? 'Deleted (replace)' : 'Deleted', a, by, s.deleteReason);
+    this.setState(st => ({ assets: st.assets.filter(x => x.id !== st.deleteId), showDelete: false, replaceDraft: null, deleteErr: '', toast: a ? 'Deleted “' + a.name + '”' + (draft ? ' — re-create it below' : '') : 'Asset deleted' }));
+    if (draft) {
+      const f = { ...this.blank(), ...draft, tag: '' }; delete f.id; delete f.lastAudit; delete f.lastSubmit; delete f.submittedBy;
+      setTimeout(() => this.setState({ showForm: true, editingId: null, form: f, err: {}, img: { condition: { scale: 1, rot: 0 }, owner: { scale: 1, rot: 0 } } }), 180);
+    }
+  };
+
+  openScan = () => this.setState({ showScan: true, showExport: false });
+  closeScan = () => this.setState({ showScan: false });
+  simulateScan = () => { const list = this.state.assets; const a = list[Math.floor(Math.random() * list.length)]; this.setState({ showScan: false }); if (a) setTimeout(() => this.openDetail(a), 120); this.toast('Scanned ' + (a ? a.tag : '')); };
+
+  openQr = (a) => this.setState({ showQr: true, qrId: a.id, showDetail: false, showExport: false });
+  closeQr = () => this.setState({ showQr: false });
+
+  // Draw a print-ready label (orange header, QR, tag, name, serial) onto a canvas.
+  qrLabelCanvas(a) {
+    const dpr = 3, W = 560, H = 720;
+    const canvas = document.createElement('canvas');
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    const font = "'Arimo', Arial, Helvetica, sans-serif";
+    // card + orange border
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#F65C1A'; ctx.lineWidth = 4; ctx.strokeRect(2, 2, W - 4, H - 4);
+    // header bar
+    ctx.fillStyle = '#F65C1A'; ctx.fillRect(2, 2, W - 4, 78);
+    ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '700 30px ' + font;
+    ctx.fillText('tristek  ·  ASSET', W / 2, 42);
+    // QR
+    const { n, cells } = this.qrMatrix(a.tag);
+    const qrSize = 360, qx = (W - qrSize) / 2, qy = 118, cell = qrSize / n;
+    ctx.fillStyle = '#241F20';
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (cells[y][x]) ctx.fillRect(qx + x * cell, qy + y * cell, cell + 0.6, cell + 0.6);
+    }
+    // tag
+    ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#241F20';
+    ctx.font = '700 46px ' + font;
+    ctx.fillText(a.tag, W / 2, qy + qrSize + 66);
+    // name (truncate to fit)
+    ctx.font = '400 24px ' + font; ctx.fillStyle = '#555555';
+    let name = a.name || '';
+    while (name.length > 6 && ctx.measureText(name).width > W - 60) name = name.slice(0, -1);
+    if (name !== (a.name || '')) name = name.replace(/\s+\S*$/, '') + '…';
+    ctx.fillText(name, W / 2, qy + qrSize + 104);
+    return canvas;
+  }
+
+  downloadQr = () => {
+    const a = this.state.assets.find(x => x.id === this.state.qrId);
+    if (!a) return;
+    const canvas = this.qrLabelCanvas(a);
+    const finish = (blob) => {
+      try {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; link.download = 'qr-label-' + a.tag + '.png';
+        document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (e) {}
+      this.toast('QR label downloaded — ' + a.tag);
+    };
+    if (canvas.toBlob) canvas.toBlob(finish, 'image/png');
+    else { const d = canvas.toDataURL('image/png'); const link = document.createElement('a'); link.href = d; link.download = 'qr-label-' + a.tag + '.png'; link.click(); this.toast('QR label downloaded — ' + a.tag); }
+  };
+
+  printQr = () => {
+    const a = this.state.assets.find(x => x.id === this.state.qrId);
+    if (!a) return;
+    const dataUrl = this.qrLabelCanvas(a).toDataURL('image/png');
+    const w = window.open('', '_blank');
+    if (!w) { this.toast('Allow pop-ups to print the label'); return; }
+    w.document.write('<html><head><title>QR label ' + a.tag + '</title><style>@page{margin:12mm}body{margin:0;display:grid;place-items:center;min-height:100vh}img{width:70mm}</style></head><body><img src="' + dataUrl + '" onload="window.focus();window.print();"/></body></html>');
+    w.document.close();
+  };
+
+  scopeAssets(scope) { const s = this.state; return scope === 'all' ? s.assets : s.assets.filter(a => a.location === scope); }
+  openAudit = () => this.setState({ showAudit: true, showExport: false, auditResult: null, audit: {} });
+  closeAudit = () => this.setState({ showAudit: false, auditResult: null, audit: {} });
+  onAuditScope = (e) => this.setState({ auditScope: e.target.value });
+  onAuditor = (e) => this.setState({ auditor: e.target.value });
+  auditMark = (id, st) => this.setState(s => ({ audit: { ...s.audit, [id]: s.audit[id] === st ? undefined : st } }));
+  resetAudit = () => this.setState({ audit: {} });
+
+  completeAudit = () => {
+    const s = this.state;
+    const scoped = this.scopeAssets(s.auditScope);
+    const marked = scoped.filter(a => s.audit[a.id]);
+    if (!marked.length) { this.toast('Mark at least one asset before completing'); return; }
+    const date = this.nowStamp();
+    const by = (s.auditor || 'Unknown').trim() || 'Unknown';
+    const scopeLabel = s.auditScope === 'all' ? 'All locations' : s.auditScope;
+    const results = marked.map(a => ({ tag: a.tag, name: a.name, location: a.location, status: s.audit[a.id] }));
+    const tally = this.tally(results);
+    const session = { id: (s.auditLog[0] ? s.auditLog[0].id + 1 : 1), date, by, scope: scopeLabel, total: results.length, ...tally, results };
+    const markedIds = new Set(marked.map(a => a.id));
+    const assets = s.assets.map(a => {
+      if (!markedIds.has(a.id)) return a;
+      const st = s.audit[a.id];
+      const upd = { ...a, lastAudit: { date, status: st, by, scope: scopeLabel } };
+      if (st === 'damaged') upd.condition = 'Damaged';
+      return upd;
+    });
+    this.setState({ assets, auditLog: [session, ...s.auditLog], auditResult: session, audit: {}, toast: `Audit logged — ${results.length} asset${results.length === 1 ? '' : 's'} verified` });
+  };
+
+  closeAuditResult = () => this.setState({ showAudit: false, auditResult: null });
+  backToAudit = () => this.setState({ auditResult: null });
+
+  auditCsv(session) {
+    const head = ['Session date', 'Auditor', 'Scope', 'Asset ID', 'Name', 'Recorded location', 'Audit result'];
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [head.join(',')].concat(session.results.map(r => [session.date, session.by, session.scope, r.tag, r.name, r.location, (this.auditMeta(r.status) || {}).label || r.status].map(esc).join(',')));
+    return lines.join('\n');
+  }
+  exportAuditCsv = () => { const r = this.state.auditResult; if (!r) return; this.download('audit-' + r.date.replace(/[^0-9]/g, '').slice(0, 8) + '.csv', this.auditCsv(r), 'text/csv'); };
+  exportAuditPdf = () => { const r = this.state.auditResult; if (r) this.printAudit(r); };
+
+  printAudit(session) {
+    const w = window.open('', '_blank');
+    if (!w) { this.toast('Allow pop-ups to export the PDF'); return; }
+    const rows = session.results.map(r => { const m = this.auditMeta(r.status) || {}; return `<tr><td class="mono">${r.tag}</td><td>${r.name}</td><td>${r.location}</td><td><span class="pill" style="color:${m.fg};background:${m.bg}">${m.label || r.status}</span></td></tr>`; }).join('');
+    const stat = (k, lbl) => `<div class="stat"><div class="sv" style="color:${(this.auditMeta(k) || {}).color}">${session[k]}</div><div class="sl">${lbl}</div></div>`;
+    const scriptTag = '<scr' + 'ipt>window.onload=function(){window.focus();window.print();}</scr' + 'ipt>';
+    w.document.write(`<html><head><title>Asset Audit Report — ${session.date}</title><style>
+      @page{margin:16mm}*{box-sizing:border-box}body{font-family:Arimo,Arial,Helvetica,sans-serif;color:#241F20;margin:0}
+      .bar{background:#F65C1A;color:#fff;padding:18px 22px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+      .bar h1{margin:0;font-size:20px}.bar .m{font-size:12px;opacity:.92;text-align:right;line-height:1.5}
+      .meta{display:flex;gap:26px;margin:18px 2px 20px;font-size:12.5px;color:#555}.meta b{color:#241F20}
+      .stats{display:flex;gap:12px;margin-bottom:20px}.stat{flex:1;border:1.5px solid rgba(226,87,22,.28);border-radius:12px;padding:14px 16px}
+      .sv{font-size:30px;font-weight:700;letter-spacing:-.02em}.sl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8a8483;margin-top:2px}
+      table{width:100%;border-collapse:collapse;font-size:12.5px}th{background:#F65C1A;color:#fff;text-align:left;padding:9px 12px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+      td{padding:9px 12px;border-bottom:1px solid rgba(36,31,32,.1)}.mono{font-weight:700}
+      .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+      .foot{margin-top:22px;font-size:11px;color:#9a9594}
+    </style></head><body>
+      <div class="bar"><h1>Asset Audit Report</h1><div class="m">tristek · Asset Management<br/>${session.date}</div></div>
+      <div class="meta"><span>Auditor: <b>${session.by}</b></span><span>Scope: <b>${session.scope}</b></span><span>Assets verified: <b>${session.total}</b></span></div>
+      <div class="stats">${stat('found', 'Found')}${stat('moved', 'Wrong location')}${stat('damaged', 'Damaged')}${stat('missing', 'Missing')}</div>
+      <table><thead><tr><th>Asset ID</th><th>Name</th><th>Recorded location</th><th>Result</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="foot">Generated from Kontrola Asset Management · ${this.nowStamp()}. Audit findings are read-only records.</div>
+      ${scriptTag}
+    </body></html>`);
+    w.document.close();
+  }
+
+  downloadAuditLog = () => {
+    const log = this.state.auditLog;
+    if (!log.length) { this.toast('No audit history yet'); return; }
+    const head = ['Session', 'Session date', 'Auditor', 'Scope', 'Asset ID', 'Name', 'Recorded location', 'Result'];
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [head.join(',')];
+    log.slice().reverse().forEach((sess, si) => sess.results.forEach(r => lines.push([si + 1, sess.date, sess.by, sess.scope, r.tag, r.name, r.location, (this.auditMeta(r.status) || {}).label || r.status].map(esc).join(','))));
+    this.download('audit-log-history.csv', lines.join('\n'), 'text/csv');
+    this.setState({ showExport: false });
+  };
+
+  openExport = () => this.setState(s => ({ showExport: !s.showExport, showFilters: false }));
+  toggleFilters = () => this.setState(s => ({ showFilters: !s.showFilters, showExport: false, showAddMenu: false }));
+  clearFilters = () => this.setState({ typeFilter: 'all', usageFilter: 'all', conditionFilter: 'all', locFilter: 'all', page: 1 });
+
+  // ---------- bulk import ----------
+  openBulk = () => this.setState({ showBulk: true, showExport: false, showAddMenu: false, bulkText: '', bulkFileName: '' });
+  closeBulk = () => this.setState({ showBulk: false, bulkText: '', bulkFileName: '' });
+  onBulkFile = (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => this.setState({ bulkText: String(r.result || ''), bulkFileName: f.name }); r.readAsText(f); e.target.value = ''; };
+  downloadTemplate = () => {
+    const head = ['Name', 'Tag', 'Serial', 'Type', 'Location', 'Owner', 'Usage', 'Condition', 'Purchase (YYYY-MM-DD)', 'Warranty (YYYY-MM-DD)', 'Value'];
+    const sample = [
+      ['Dell Latitude 5540', 'AST-1001', '5CG3K21X9M', 'Laptop', 'HQ - Floor 1', 'Andi Pratama', 'In Use', 'Good', '2024-02-10', '2027-02-10', '18500000'],
+      ['Herman Miller Aeron', '', '', 'Furniture', 'HQ - Floor 2', 'Citra Dewanti', 'In Use', 'Good', '2024-01-10', '', '12800000'],
+    ];
+    const esc = (v) => '"' + String(v).replace(/"/g, '""') + '"';
+    const csv = [head.join(','), ...sample.map(r => r.map(esc).join(','))].join('\n');
+    this.download('asset-import-template.csv', csv, 'text/csv');
+  };
+  parseBulk(text) {
+    const lines = String(text || '').split(/\r?\n/).filter(l => l.trim().length);
+    if (!lines.length) return { rows: [], valid: 0, invalid: 0, hasHeader: false };
+    const delim = lines[0].indexOf('\t') >= 0 ? '\t' : ',';
+    const splitLine = (line) => {
+      if (delim === '\t') return line.split('\t');
+      const out = []; let cur = '', q = false;
+      for (let i = 0; i < line.length; i++) { const c = line[i];
+        if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+        else { if (c === '"') q = true; else if (c === ',') { out.push(cur); cur = ''; } else cur += c; } }
+      out.push(cur); return out;
+    };
+    const data = lines.map(splitLine);
+    const hasHeader = data[0].some(c => /^(name|asset name|nama|tag|asset tag|serial|type|owner|value)$/i.test((c || '').trim()));
+    const body = hasHeader ? data.slice(1) : data;
+    const types = ['Laptop', 'Desktop', 'Monitor', 'Printer', 'Server', 'Network Device', 'Projector', 'Furniture'];
+    const rows = body.map((cols) => {
+      const g = (n) => (cols[n] != null ? String(cols[n]).trim() : '');
+      const name = g(0);
+      const tm = types.find(t => t.toLowerCase() === g(3).toLowerCase());
+      const usage = /idle|nganggur/i.test(g(6)) ? 'Idle' : 'In Use';
+      const condition = /damag|rusak/i.test(g(7)) ? 'Damaged' : 'Good';
+      const value = Number(g(10).replace(/[^0-9]/g, '')) || 0;
+      return { name, tag: g(1), serial: g(2), type: tm || 'Laptop', location: g(4) || 'HQ - Floor 1', owner: g(5), usage, condition, purchase: g(8), warranty: g(9), value, ok: !!name, error: name ? '' : 'Missing name' };
+    });
+    const valid = rows.filter(r => r.ok).length;
+    return { rows, valid, invalid: rows.length - valid, hasHeader };
+  }
+  confirmBulk = () => {
+    const good = this.parseBulk(this.state.bulkText).rows.filter(r => r.ok);
+    if (!good.length) { this.toast('No valid rows to import — check the format'); return; }
+    this.setState(s => {
+      let seq = s.seq;
+      const add = good.map(r => { seq += 1; const tag = r.tag && r.tag.trim() ? r.tag.trim() : 'AST-' + String(seq).padStart(4, '0'); const { ok, error, ...rest } = r; return { ...rest, id: seq, tag, photoCondition: '', photoOwner: '', lastSubmit: this.nowStamp(), lastAudit: null, submittedBy: (this.state.submitBy || 'Unknown').trim() || 'Unknown' }; });
+      return { assets: [...add, ...s.assets], seq, showBulk: false, bulkText: '', bulkFileName: '', page: 1, toast: add.length + (add.length === 1 ? ' asset imported' : ' assets imported') };
+    });
+  };
+
+  download(name, text, mime) {
+    try { const blob = new Blob([text], { type: mime }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); this.toast('Exported ' + name); }
+    catch (e) { this.toast('Export ready: ' + name); }
+  }
+  buildCsv() {
+    const rows = this.currentFiltered();
+    const head = ['Tag', 'Name', 'Serial', 'Type', 'Location', 'Owner', 'Usage', 'Condition', 'Warranty status', 'Purchase', 'Warranty', 'Value', 'Last audit', 'Audit result', 'Last submitted'];
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [head.join(',')].concat(rows.map(a => { const lc = this.lifecycle(a.warranty); const la = a.lastAudit; return [a.tag, a.name, a.serial, a.type, a.location, a.owner, a.usage, a.condition, lc ? lc.label : 'N/A', a.purchase, a.warranty, a.value, la ? la.date : 'Never', la ? ((this.auditMeta(la.status) || {}).label || la.status) : 'N/A', a.lastSubmit || 'N/A'].map(esc).join(','); }));
+    return lines.join('\n');
+  }
+  exportCsv = () => { this.setState({ showExport: false }); this.download('assets.csv', this.buildCsv(), 'text/csv'); };
+  exportXls = () => { this.setState({ showExport: false }); this.download('assets.xls', this.buildCsv(), 'application/vnd.ms-excel'); };
+  exportPdf = () => { this.setState({ showExport: false }); this.toast('Preparing PDF report…'); };
+
+  takePhoto = () => this.toast('Camera not available in preview — use Upload');
+  imgAdj = (slot, fn) => this.setState(s => ({ img: { ...s.img, [slot]: fn(s.img[slot] || { scale: 1, rot: 0 }) } }));
+  zoomIn = (slot) => this.imgAdj(slot, t => ({ ...t, scale: Math.min(3, +(t.scale + 0.2).toFixed(2)) }));
+  zoomOut = (slot) => this.imgAdj(slot, t => ({ ...t, scale: Math.max(0.4, +(t.scale - 0.2).toFixed(2)) }));
+  rotate = (slot) => this.imgAdj(slot, t => ({ ...t, rot: (t.rot + 90) % 360 }));
+
+  currentFiltered() {
+    const s = this.state; const q = s.search.toLowerCase();
+    let rows = s.assets.filter(a => {
+      if (s.typeFilter !== 'all' && a.type !== s.typeFilter) return false;
+      if (s.usageFilter !== 'all' && a.usage !== s.usageFilter) return false;
+      if (s.conditionFilter !== 'all' && a.condition !== s.conditionFilter) return false;
+      if (s.locFilter !== 'all' && a.location !== s.locFilter) return false;
+      if (q && !(a.name + a.tag + a.serial + a.owner + a.type + a.location).toLowerCase().includes(q)) return false;
+      return true;
+    });
+    const k = s.sortKey, dir = s.sortDir;
+    rows = [...rows].sort((a, b) => {
+      let va = a[k], vb = b[k];
+      if (k === 'value') { va = Number(va) || 0; vb = Number(vb) || 0; return (va - vb) * dir; }
+      va = String(va || ''); vb = String(vb || '');
+      return va < vb ? -dir : va > vb ? dir : 0;
+    });
+    return rows;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const filtered = this.currentFiltered();
+    const filterCount = ['typeFilter', 'usageFilter', 'conditionFilter', 'locFilter'].filter(k => s[k] !== 'all').length;
+    const per = Number(s.perPage) || 8;
+    const totalPages = Math.max(1, Math.ceil(filtered.length / per));
+    const page = Math.min(s.page, totalPages);
+    const start = (page - 1) * per;
+    const paged = filtered.slice(start, start + per);
+
+    // ---- donuts (all assets) ----
+    const typeCounts = {}; s.assets.forEach(a => typeCounts[a.type] = (typeCounts[a.type] || 0) + 1);
+    const typeSeg = Object.keys(typeCounts).map((t, i) => ({ label: t, value: typeCounts[t], color: this.palette[i % this.palette.length] }));
+    const inUse = s.assets.filter(a => a.usage === 'In Use').length;
+    const usageSeg = [{ label: 'In Use', value: inUse, color: 'var(--good)' }, { label: 'Idle', value: s.assets.length - inUse, color: '#454f5e' }];
+    const good = s.assets.filter(a => a.condition === 'Good').length;
+    const condSeg = [{ label: 'Good', value: good, color: 'var(--good)' }, { label: 'Damaged', value: s.assets.length - good, color: 'var(--bad)' }];
+
+    // ---- suggestions ----
+    let suggestions = [];
+    if (s.search.trim()) {
+      const q = s.search.toLowerCase();
+      suggestions = s.assets.filter(a => (a.name + a.tag + a.serial + a.owner).toLowerCase().includes(q)).slice(0, 6).map(a => ({
+        text: a.name, sub: a.tag + ' · SN ' + a.serial + ' · ' + a.owner, badge: a.type.slice(0, 2).toUpperCase(),
+        pick: (e) => { if (e) e.preventDefault(); this.setState({ search: a.name, suggestOpen: false, page: 1 }); },
+      }));
+    }
+
+    // ---- top nav (real DS TopNav) ----
+    const themeIcon = s.theme === 'light'
+      ? this.svg([React.createElement('path', { key: 1, d: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' })])
+      : this.svg([React.createElement('circle', { key: 1, cx: 12, cy: 12, r: 4 }), React.createElement('path', { key: 2, d: 'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4' })]);
+    const DS = window.KontrolaDesignSystem_ebdf13 || {};
+    const IB = DS.IconButton;
+    const navLogo = React.createElement('a', { href: '#', style: { display: 'flex' } }, React.createElement('img', { src: 'assets/kontrola-logo.png', alt: 'kontrola', style: { height: 38 } }));
+    const navItems = [{ href: '#overview', label: 'Overview' }, { href: '#infrastructure', label: 'Infrastructure' }, { href: '#network', label: 'Network' }, { href: '#licenses', label: 'Licenses' }, { href: '#assets', label: 'Assets' }];
+    const bellIcon = this.svg([React.createElement('path', { key: 1, d: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9' }), React.createElement('path', { key: 2, d: 'M13.7 21a2 2 0 0 1-3.4 0' })]);
+    const userPill = React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 11, background: 'var(--nav-bg)', borderRadius: 999, padding: '6px 18px 6px 6px', boxShadow: 'var(--shadow-card)' } },
+      React.createElement('span', { style: { width: 36, height: 36, borderRadius: 999, background: 'var(--light)', display: 'grid', placeItems: 'center', color: 'var(--gray)' } }, this.svg([React.createElement('circle', { key: 1, cx: 12, cy: 8, r: 4 }), React.createElement('path', { key: 2, d: 'M4 21a8 8 0 0 1 16 0' })])),
+      React.createElement('span', { style: { fontWeight: 600, fontSize: 14.5 } }, 'admin@tristek.id'));
+    const iconBtn = (title, onClick, child) => IB
+      ? React.createElement(IB, { title, onClick }, child)
+      : React.createElement('button', { title, onClick, style: { width: 46, height: 46, borderRadius: 999, border: 'none', background: 'var(--nav-bg)', color: 'var(--gray)', boxShadow: 'var(--shadow-card)', display: 'grid', placeItems: 'center', cursor: 'pointer' } }, React.createElement('span', { style: { width: 20, height: 20 } }, child));
+    const navActions = React.createElement(React.Fragment, null, iconBtn('Notifications', null, bellIcon), iconBtn('Toggle theme', this.toggleTheme, themeIcon), userPill);
+
+    // ---- compact table ----
+    const columns = [
+      { key: 'photo', label: '' },
+      { key: 'tag', label: 'Asset ID', sort: true },
+      { key: 'name', label: 'Name', sort: true },
+      { key: 'type', label: 'Type', sort: true },
+      { key: 'location', label: 'Location', sort: true },
+      { key: 'owner', label: 'Owner', sort: true },
+      { key: 'usage', label: 'Usage', sort: true },
+      { key: 'condition', label: 'Condition', sort: true },
+      { key: 'warranty', label: 'Warranty', sort: true },
+      { key: 'value', label: 'Value', num: true, sort: true },
+      { key: 'actions', label: 'Actions' },
+    ];
+    const actBtn = (title, color, onClick, icon) => React.createElement('button', {
+      title, className: 'amc-row-act', onClick: (e) => { e.stopPropagation(); onClick(); },
+      style: { width: 28, height: 28, borderRadius: 8, border: '1.5px solid var(--field-border)', background: 'var(--field-bg)', color: color || 'var(--text-muted)', cursor: 'pointer', display: 'grid', placeItems: 'center', padding: 0 },
+    }, React.createElement('span', { style: { width: 14, height: 14 } }, icon));
+
+    const renderCell = (row, key) => {
+      if (key === 'photo') { const src = row.photoCondition || row.photoOwner; return React.createElement('div', { onClick: () => this.openDetail(row), style: { width: 32, height: 32, borderRadius: 8, background: 'var(--field-bg)', border: '1px solid var(--card-border-soft)', overflow: 'hidden', display: 'grid', placeItems: 'center', cursor: 'pointer' } },
+        src ? React.createElement('img', { src, style: { width: '100%', height: '100%', objectFit: 'cover' } }) : React.createElement('span', { style: { width: 18, height: 18, color: 'var(--text-faint)' } }, this.typeIcon(row.type))); }
+      if (key === 'tag') return React.createElement('span', { onClick: () => this.openDetail(row), style: { fontWeight: 700, cursor: 'pointer', fontVariantNumeric: 'tabular-nums' } }, row.tag);
+      if (key === 'serial') return React.createElement('span', { style: { fontSize: 11.5, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' } }, row.serial || '—');
+      if (key === 'name') return React.createElement('span', { onClick: () => this.openDetail(row), style: { fontWeight: 600, cursor: 'pointer' } }, row.name);
+      if (key === 'usage') return this.box(row.usage, this.usageStyle(row.usage));
+      if (key === 'condition') return this.box(row.condition, this.conditionStyle(row.condition));
+      if (key === 'warranty') {
+        if (!row.warranty) return this.box('N/A', { fg: 'var(--text-faint)', bg: 'var(--field-bg)' });
+        const lc = this.lifecycle(row.warranty);
+        return this.box(row.warranty, { fg: lc.fg, bg: lc.bg });
+      }
+      if (key === 'value') return React.createElement('span', { style: { fontWeight: 600, fontVariantNumeric: 'tabular-nums' } }, this.fmtMoney(row.value));
+      if (key === 'actions') return React.createElement('div', { style: { display: 'flex', gap: 6, justifyContent: 'flex-start' } },
+        actBtn('View detail', 'var(--text-muted)', () => this.openDetail(row), this.svg([React.createElement('path', { key: 1, d: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z' }), React.createElement('circle', { key: 2, cx: 12, cy: 12, r: 3 })])),
+        actBtn('Show QR', 'var(--text-muted)', () => this.openQr(row), this.svg([React.createElement('path', { key: 1, d: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3zM20 14v6M17 20h3' })])),
+        actBtn('Delete', 'var(--bad)', () => this.askDelete(row), this.svg([React.createElement('path', { key: 1, d: 'M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6' })])));
+      return row[key];
+    };
+
+    const sortIcon = (c) => {
+      if (!c.sort) return null;
+      const activeCol = s.sortKey === c.key;
+      const upOp = activeCol && s.sortDir === -1 ? 1 : 0.4;
+      const dnOp = activeCol && s.sortDir === 1 ? 1 : 0.4;
+      return React.createElement('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: '#fff', strokeWidth: 2.4, strokeLinecap: 'round', strokeLinejoin: 'round', style: { width: 13, height: 13, marginLeft: 5, flex: 'none', verticalAlign: 'middle' } },
+        React.createElement('polyline', { points: '8 10 12 6 16 10', style: { opacity: upOp } }),
+        React.createElement('polyline', { points: '8 14 12 18 16 14', style: { opacity: dnOp } }));
+    };
+    const thEl = (c) => React.createElement('th', { key: c.key, onClick: () => c.sort && this.onSort(c.key), style: { textAlign: c.num ? 'right' : 'left', fontWeight: 700, fontSize: 11, letterSpacing: '.04em', textTransform: 'uppercase', color: '#fff', background: 'var(--orange)', padding: '9px 12px', whiteSpace: 'nowrap', cursor: c.sort ? 'pointer' : 'default', userSelect: 'none' } },
+      React.createElement('span', { style: { display: 'inline-flex', alignItems: 'center', justifyContent: c.num ? 'flex-end' : 'flex-start', width: '100%' } }, c.label, sortIcon(c)));
+    const nowrapKeys = { value: 1, warranty: 1, usage: 1, condition: 1, tag: 1, serial: 1, photo: 1, actions: 1 };
+    const assetTable = React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: 12.5 } },
+      React.createElement('thead', null, React.createElement('tr', null, columns.map(thEl))),
+      React.createElement('tbody', null, paged.map((row) => React.createElement('tr', { key: row.id, style: { borderBottom: '1px solid var(--row-border)' }, onMouseEnter: (e) => e.currentTarget.style.background = 'var(--row-hover)', onMouseLeave: (e) => e.currentTarget.style.background = 'transparent' },
+        columns.map((c) => React.createElement('td', { key: c.key, style: { padding: '6px 12px', textAlign: c.num ? 'right' : 'left', verticalAlign: 'middle', whiteSpace: nowrapKeys[c.key] ? 'nowrap' : 'normal' } }, renderCell(row, c.key)))))));
+
+    // ---- detail ----
+    const detail = s.assets.find(a => a.id === s.detailId) || { name: '', tag: '', type: 'Laptop', location: '', owner: '', serial: '', usage: 'In Use', condition: 'Good', value: 0, purchase: '', warranty: '' };
+    const lc = this.lifecycle(detail.warranty);
+
+    // ---- audit ----
+    const stateDefs = this.auditStates();
+    const scopedAssets = this.scopeAssets(s.auditScope);
+    const auditList = scopedAssets.map(a => {
+      const st = s.audit[a.id];
+      const la = a.lastAudit;
+      return {
+        badge: a.type.slice(0, 2).toUpperCase(), name: a.name, sub: a.tag + ' · ' + a.location,
+        lastNote: la ? 'Last: ' + (this.auditMeta(la.status) || {}).label + ' · ' + la.date.split(' · ')[0] : 'Never audited',
+        rowBg: st ? 'var(--row-hover)' : 'transparent',
+        states: stateDefs.map(d => {
+          const on = st === d.k;
+          return {
+            title: d.label, onClick: () => this.auditMark(a.id, d.k),
+            icon: React.createElement('span', { style: { width: 15, height: 15, display: 'block' } }, this.svg(d.d.map((p, i) => React.createElement('path', { key: i, d: p })), 2.2)),
+            bg: on ? d.color : 'var(--field-bg)', fg: on ? '#fff' : 'var(--text-faint)', border: on ? d.color : 'var(--field-border)',
+          };
+        }),
+      };
+    });
+    const auditDoneScope = scopedAssets.filter(a => s.audit[a.id]).length;
+    const res = s.auditResult;
+    const resStat = (k, lbl) => ({ k, label: lbl, value: res ? res[k] : 0, color: (this.auditMeta(k) || {}).color });
+    const resExceptions = res ? res.results.filter(r => r.status !== 'found').map(r => { const m = this.auditMeta(r.status) || {}; return { tag: r.tag, name: r.name, location: r.location, label: m.label, fg: m.fg, bg: m.bg }; }) : [];
+
+    // ---- bulk import preview ----
+    const bulk = s.showBulk ? this.parseBulk(s.bulkText) : { rows: [], valid: 0, invalid: 0 };
+    const bulkCols = [
+      { k: 'name', label: 'Name' }, { k: 'tag', label: 'Tag' }, { k: 'type', label: 'Type' },
+      { k: 'location', label: 'Location' }, { k: 'owner', label: 'Owner' }, { k: 'usage', label: 'Usage' },
+      { k: 'condition', label: 'Condition' }, { k: 'warranty', label: 'Warranty' }, { k: 'value', label: 'Value' },
+    ];
+    const bulkTh = (c) => React.createElement('th', { key: c.k, style: { textAlign: c.k === 'value' ? 'right' : 'left', fontSize: 10, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text-faint)', background: 'var(--thead-bg)', padding: '7px 10px', whiteSpace: 'nowrap', position: 'sticky', top: 0 } }, c.label);
+    const bulkPreview = React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: 12 } },
+      React.createElement('thead', null, React.createElement('tr', null,
+        React.createElement('th', { style: { width: 26, background: 'var(--thead-bg)', position: 'sticky', top: 0 } }), bulkCols.map(bulkTh))),
+      React.createElement('tbody', null, bulk.rows.slice(0, 100).map((r, i) => React.createElement('tr', { key: i, style: { borderBottom: '1px solid var(--row-border)', background: r.ok ? 'transparent' : 'var(--warn-bg)' } },
+        React.createElement('td', { style: { padding: '6px 8px', textAlign: 'center' } }, React.createElement('span', { title: r.ok ? 'Will import' : r.error, style: { display: 'inline-grid', placeItems: 'center', width: 15, height: 15, color: r.ok ? 'var(--good)' : 'var(--warn)' } }, r.ok ? this.svg([React.createElement('path', { key: 1, d: 'M20 6 9 17l-5-5' })], 2.6) : this.svg([React.createElement('circle', { key: 1, cx: 12, cy: 12, r: 10 }), React.createElement('path', { key: 2, d: 'M12 8v4M12 16h.01' })], 2))),
+        bulkCols.map((c) => React.createElement('td', { key: c.k, style: { padding: '6px 10px', textAlign: c.k === 'value' ? 'right' : 'left', whiteSpace: 'nowrap', color: c.k === 'name' && !r.name ? 'var(--text-faint)' : 'var(--text)', fontStyle: c.k === 'name' && !r.name ? 'italic' : 'normal', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', fontVariantNumeric: 'tabular-nums' } },
+          c.k === 'value' ? this.fmtMoney(r.value) : (c.k === 'name' ? (r.name || '(missing)') : (r[c.k] || '—')))))
+      )));
+
+    return {
+      theme: s.theme, navLogo, navItems, navActions, assetTable,
+      typeDonut: this.donut(typeSeg, 'Total', s.assets.length, 'td'),
+      usageDonut: this.donut(usageSeg, 'Total', s.assets.length, 'usd'),
+      conditionDonut: this.donut(condSeg, 'Total', s.assets.length, 'cd'),
+      empty: filtered.length === 0,
+      shownCount: filtered.length,
+      pageInfo: filtered.length ? `Showing ${start + 1}–${Math.min(start + per, filtered.length)} of ${filtered.length} assets` : 'No assets to show',
+      page, prevOpacity: page <= 1 ? 0.4 : 1, nextOpacity: page >= totalPages ? 0.4 : 1,
+      prevPage: () => this.setState(x => ({ page: Math.max(1, x.page - 1) })),
+      nextPage: () => this.setState(x => ({ page: Math.min(totalPages, x.page + 1) })),
+      search: s.search, onSearch: this.onSearch, onSearchFocus: this.onSearchFocus, onSearchBlur: this.onSearchBlur,
+      showSuggest: s.suggestOpen && suggestions.length > 0, suggestions,
+      typeFilter: s.typeFilter, usageFilter: s.usageFilter, conditionFilter: s.conditionFilter, locFilter: s.locFilter, perPage: s.perPage,
+      onTypeFilter: this.onTypeFilter, onUsageFilter: this.onUsageFilter, onConditionFilter: this.onConditionFilter, onLocFilter: this.onLocFilter, onPerPage: this.onPerPage,
+      showFilters: s.showFilters, toggleFilters: this.toggleFilters, clearFilters: this.clearFilters,
+      filterCount: filterCount, hasFilters: filterCount > 0,
+      filterBtnColor: filterCount > 0 ? 'var(--orange)' : 'var(--text)',
+      filterBtnBg: filterCount > 0 ? 'var(--orange-050)' : 'var(--field-bg)',
+      filterBtnBorder: filterCount > 0 ? 'rgba(246,92,26,.5)' : 'var(--field-border)',
+      clearColor: filterCount > 0 ? 'var(--orange)' : 'var(--text-faint)',
+      clearCursor: filterCount > 0 ? 'pointer' : 'default',
+      openAdd: this.openAdd, openScan: this.openScan, openAudit: this.openAudit,
+      openBulk: this.openBulk, openAddMenu: this.openAddMenu, showAddMenu: s.showAddMenu,
+      openExport: this.openExport, showExport: s.showExport, exportCsv: this.exportCsv, exportXls: this.exportXls, exportPdf: this.exportPdf,
+      stop: this.stop,
+      // form
+      showForm: s.showForm, form: s.form, err: s.err,
+      nameBorder: s.err.name ? 'var(--bad)' : 'var(--field-border)',
+      tagPlaceholder: s.editingId ? s.form.tag : 'Auto-generated if blank',
+      formTitle: s.editingId ? 'Modify asset' : 'Add new asset',
+      saveLabel: s.editingId ? 'Update asset' : 'Add asset',
+      closeForm: this.closeForm, saveForm: this.saveForm,
+      formPhotoCond: this.photoEl(s.form.photoCondition, s.form.type, 'condition'),
+      formPhotoOwner: this.photoEl(s.form.photoOwner, s.form.type, 'owner'),
+      formQr: this.qr(s.form.tag || (s.editingId ? '' : 'AST-NEW'), 'fq'),
+      takePhoto: this.takePhoto,
+      condZoomIn: () => this.zoomIn('condition'), condZoomOut: () => this.zoomOut('condition'), condRotate: () => this.rotate('condition'), condShare: () => this.toast('Condition photo shared'),
+      ownZoomIn: () => this.zoomIn('owner'), ownZoomOut: () => this.zoomOut('owner'), ownRotate: () => this.rotate('owner'), ownShare: () => this.toast('Owner photo shared'),
+      ff: {
+        name: (e) => this.setForm('name', e.target.value),
+        tag: (e) => this.setForm('tag', e.target.value),
+        serial: (e) => this.setForm('serial', e.target.value),
+        owner: (e) => this.setForm('owner', e.target.value),
+        value: (e) => this.setForm('value', e.target.value),
+        type: (e) => this.setForm('type', e.target.value),
+        location: (e) => this.setForm('location', e.target.value),
+        usage: (e) => this.setForm('usage', e.target.value),
+        condition: (e) => this.setForm('condition', e.target.value),
+        purchase: (e) => this.setForm('purchase', e.target.value),
+        warranty: (e) => this.setForm('warranty', e.target.value),
+        uploadCond: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { this.setForm('photoCondition', r.result); this.imgAdj('condition', () => ({ scale: 1, rot: 0 })); this.toast('Condition photo added'); }; r.readAsDataURL(f); },
+        uploadOwner: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { this.setForm('photoOwner', r.result); this.imgAdj('owner', () => ({ scale: 1, rot: 0 })); this.toast('Owner photo added'); }; r.readAsDataURL(f); },
+      },
+      // detail
+      showDetail: s.showDetail, detail,
+      detailSerial: detail.serial || '—', detailOwner: detail.owner || 'Unassigned', detailValue: this.fmtMoney(detail.value),
+      detailPurchase: detail.purchase || 'N/A', detailWarranty: detail.warranty || 'N/A',
+      detailLastSubmit: (detail.lastSubmit || 'N/A') + (detail.submittedBy ? ' · by ' + detail.submittedBy : ''),
+      detailLastAudit: detail.lastAudit ? detail.lastAudit.date : 'Never audited',
+      detailLastAuditPill: detail.lastAudit ? this.pill((this.auditMeta(detail.lastAudit.status) || {}).label, { fg: (this.auditMeta(detail.lastAudit.status) || {}).fg, bg: (this.auditMeta(detail.lastAudit.status) || {}).bg }, 'dla') : null,
+      detailLastAuditBy: detail.lastAudit ? 'by ' + detail.lastAudit.by : '',
+      detailUsage: this.pill(detail.usage, this.usageStyle(detail.usage), 'du'),
+      detailCondition: this.pill(detail.condition, this.conditionStyle(detail.condition), 'dc'),
+      detailLifecycle: lc ? React.createElement('span', { key: 'dl', style: { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 700, padding: '4px 10px', borderRadius: 999, whiteSpace: 'nowrap', background: lc.bg, color: lc.fg } }, React.createElement('span', { style: { width: 6, height: 6, borderRadius: 999, background: lc.fg } }), 'Warranty: ' + lc.label) : null,
+      detailPhotoCond: this.photoEl(detail.photoCondition, detail.type, 'condition'),
+      detailPhotoOwner: this.photoEl(detail.photoOwner, detail.type, 'owner'),
+      detailQr: this.qr(detail.tag, 'dq'),
+      replaceFromDetail: this.replaceFromDetail, askDeleteFromDetail: this.askDeleteFromDetail, closeDetail: this.closeDetail,
+      // delete
+      showDelete: s.showDelete, deleteName: (s.assets.find(a => a.id === s.deleteId) || {}).name || 'this asset',
+      confirmDelete: this.confirmDelete, cancelDelete: this.cancelDelete,
+      deleteBy: s.deleteBy, onDeleteBy: this.onDeleteBy, deleteOtp: s.deleteOtp, onDeleteOtp: this.onDeleteOtp,
+      deleteReason: s.deleteReason || '', onDeleteReason: this.onDeleteReason,
+      sendOtp: this.sendOtp, otpSent: !!s.otpCode, otpDemo: s.otpCode || '', deleteErr: s.deleteErr, hasDeleteErr: !!s.deleteErr,
+      isReplace: !!s.replaceDraft,
+      deleteTitle: s.replaceDraft ? 'Delete & re-create asset?' : 'Delete this asset?',
+      deleteNote: s.replaceDraft ? 'Assets cannot be edited. The current record will be deleted, then a pre-filled form opens so it can be re-created as a new asset.' : 'Assets are immutable records — deletion is permanent and requires identity + code verification.',
+      otpBtnLabel: s.otpCode ? 'Resend code' : 'Send code',
+      deleteConfirmLabel: s.replaceDraft ? 'Delete & re-create' : 'Delete asset',
+      // activity log
+      showActivity: s.showActivity, toggleActivity: this.toggleActivity, downloadActivityLog: this.downloadActivityLog,
+      activityList: s.activityLog.slice(0, 40).map(e => ({
+        time: e.time, action: e.action, tag: e.tag, name: e.name,
+        by: e.by + (e.reason ? ' · ' + e.reason : ''),
+        fg: e.action === 'Added' ? 'var(--good)' : 'var(--bad)', bg: e.action === 'Added' ? 'var(--good-bg)' : 'var(--bad-bg)',
+      })),
+      activityCount: s.activityLog.length + ' entries',
+      // submitted-by (add form)
+      submitBy: s.submitBy, onSubmitBy: this.onSubmitBy,
+      // scan
+      showScan: s.showScan, closeScan: this.closeScan, simulateScan: this.simulateScan,
+      // show qr label
+      showQr: s.showQr, closeQr: this.closeQr, downloadQr: this.downloadQr, printQr: this.printQr,
+      qrBig: this.qr((s.assets.find(a => a.id === s.qrId) || {}).tag, 'qrbig'),
+      qrTag: (s.assets.find(a => a.id === s.qrId) || {}).tag || '',
+      qrName: (s.assets.find(a => a.id === s.qrId) || {}).name || '',
+      // audit
+      showAudit: s.showAudit, closeAudit: this.closeAudit, auditList,
+      showAuditChecklist: s.showAudit && !s.auditResult,
+      auditScope: s.auditScope, onAuditScope: this.onAuditScope, auditor: s.auditor, onAuditor: this.onAuditor,
+      auditScopeCount: scopedAssets.length + ' asset' + (scopedAssets.length === 1 ? '' : 's') + ' in scope',
+      auditProgress: auditDoneScope + ' / ' + scopedAssets.length,
+      auditBar: React.createElement('div', { style: { width: Math.round(auditDoneScope / (scopedAssets.length || 1) * 100) + '%', height: '100%', borderRadius: 999, background: 'var(--orange)', transition: 'width .3s ease' } }),
+      resetAudit: this.resetAudit, completeAudit: this.completeAudit,
+      // audit result view
+      auditResult: s.auditResult, backToAudit: this.backToAudit, closeAuditResult: this.closeAuditResult,
+      exportAuditCsv: this.exportAuditCsv, exportAuditPdf: this.exportAuditPdf,
+      resTitle: res ? res.total + ' asset' + (res.total === 1 ? '' : 's') + ' verified' : '',
+      resMeta: res ? res.by + ' · ' + res.scope + ' · ' + res.date : '',
+      resStats: [resStat('found', 'Found'), resStat('moved', 'Wrong loc'), resStat('damaged', 'Damaged'), resStat('missing', 'Missing')],
+      resExceptions, resHasExceptions: resExceptions.length > 0, resNoExceptions: !!res && resExceptions.length === 0,
+      // last-audit indicator + full log
+      lastAuditLabel: s.auditLog.length ? s.auditLog[0].date.split(' · ')[0] : 'Never',
+      lastAuditSummary: s.auditLog.length ? (s.auditLog[0].missing + s.auditLog[0].damaged > 0 ? s.auditLog[0].missing + ' missing · ' + s.auditLog[0].damaged + ' damaged' : 'all verified') : 'run your first audit',
+      hasAuditLog: s.auditLog.length > 0, downloadAuditLog: this.downloadAuditLog,
+      // bulk import
+      showBulk: s.showBulk, closeBulk: this.closeBulk, bulkText: s.bulkText,
+      bulkDropTitle: s.bulkFileName ? s.bulkFileName + ' — choose another' : 'Click to choose a file',
+      onBulkFile: this.onBulkFile, downloadTemplate: this.downloadTemplate, confirmBulk: this.confirmBulk,
+      bulkPreview, bulkHasRows: bulk.rows.length > 0, bulkValid: bulk.valid, bulkInvalid: bulk.invalid,
+      bulkHasInvalid: bulk.invalid > 0,
+      bulkBtnLabel: bulk.valid > 0 ? 'Import ' + bulk.valid + (bulk.valid === 1 ? ' asset' : ' assets') : 'Import assets',
+      bulkBtnOpacity: bulk.valid > 0 ? 1 : 0.5,
+      // toast
+      toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

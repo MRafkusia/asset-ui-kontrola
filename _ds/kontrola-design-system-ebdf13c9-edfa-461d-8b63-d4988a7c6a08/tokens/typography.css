@@ -1,0 +1,40 @@
+/* ===========================================================
+   Kontrola — Typography tokens
+   Typeface: Arimo (web fallback for Swiss 721 BT / Helvetica)
+   Loaded from Google Fonts CDN — see fonts/fonts.css
+   =========================================================== */
+
+:root {
+  --font-body: 'Arimo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Arimo', monospace; /* tabular figures — the product has no distinct mono face */
+
+  /* ---- Type scale, taken verbatim from styles.css ---- */
+  --text-2xs: 10.5px;   /* micro labels, uppercase eyebrow tags */
+  --text-xs: 11.5px;    /* badges, table headers, chips */
+  --text-sm: 12.5px;    /* sub-labels, captions */
+  --text-base: 14px;    /* table cells, buttons, inputs */
+  --text-body: 15px;    /* body copy (base font-size on <body>) */
+  --text-md: 16px;
+  --text-lg: 19px;      /* section h2 (smaller) */
+  --text-xl: 21px;      /* card/table titles */
+  --text-2xl: 26px;     /* device hero h1 */
+  --text-3xl: 30px;     /* summary stat value */
+  --text-4xl: 33px;     /* metric card big value */
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.2;
+  --leading-normal: 1.45;   /* body line-height */
+  --leading-relaxed: 1.5;
+
+  --tracking-tight: -.02em;   /* headings / big numbers */
+  --tracking-tighter: -.022em;
+  --tracking-normal: 0;
+  --tracking-wide: .01em;
+  --tracking-wider: .04em;    /* uppercase eyebrow / table header */
+  --tracking-widest: .07em;   /* metric-card m-label */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+}
